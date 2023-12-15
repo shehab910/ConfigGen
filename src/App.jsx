@@ -117,3 +117,32 @@ const App = () => {
 };
 
 export default App;
+// TODO: Generate button 
+// TODO: Clear button --> yrg3 ll default data 
+// TODO: Add task button 
+//list to curly braces function:
+`
+list_to_curly_braces = lambda x: "{" + ", ".join(list(map(str, x))) + "}"
+`
+//generate c file function:
+`
+def generate_c_file(priority_list: list[int],
+task_list: list[str],
+PriorityLevelsSize: list[int]):
+"""
+Return a string containing the C macros defined in the JSON file.
+"""
+file = f"""
+/***********************************************************************************/
+/*				    			External constants		         				   */
+/***********************************************************************************/
+uint8 PriorityLevels [PRIORITY_LEVELS] = {list_to_curly_braces(priority_list)};
+
+OS_Tasks Tasks[] = {list_to_curly_braces(task_list)};
+
+TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = {list_to_curly_braces(PriorityLevelsSize)};
+
+"""
+return file.strip()
+`
+
