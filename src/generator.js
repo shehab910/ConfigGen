@@ -54,6 +54,27 @@ const getConformancesClass = (taskList) => {
 	}
 };
 
+const getTaskInfoText = (task,taskList) => {
+return`
+	{
+		.TaskStaticPriority = ${task["Priority"]},
+		.TaskID = ${task["Task-ID"]},
+		.ApplicationMode = ${task["Application Mode"]},
+		.NumOfActivationRequests = ${task["Number Of Activation"]},
+		.PriorityQueueIndex = ${getPriorityLevelsSorted(taskList).indexOf(task["Priority"])},
+		.TaskFlags ,
+		.TaskStack ,
+		.EntryPoint = ${task["Entry Point"]},
+		.InternalResource ,
+		.TaskDynamics
+	}`.trim();
+};
+
+const getAllTaskInfoText = (taskList) => {
+	return taskList.map((task) => getTaskInfoText(task,taskList)).join(",\n\t");
+}
+
+
 export const generateHFile = (taskList, jsonData) => {
 	return getHFileText(
 		taskList.length,
@@ -67,6 +88,14 @@ export const generateHFile = (taskList, jsonData) => {
 		getConformancesClass(taskList)
 	);
 };
+
+export const generateCFile = (taskList) => {
+	return getCFileText(
+		getPriorityLevelsSorted(taskList),
+		getPriorityLevelsSize(taskList),
+		taskList
+	);
+}
 
 /**
  * Generates an H file with specified parameters.
@@ -98,15 +127,10 @@ export const getHFileText = (
 /*                                  MACROS                                         */
 /***********************************************************************************/
 /* total number of tasks created by the user */
-#define TASK_COUNT                                      ${toUhexFormat(
-		number_of_tasks
-	)}
+#define TASK_COUNT                                      ${toUhexFormat(number_of_tasks)}
 
 /* number of priority levels assigned by the user */
-#define PRIORITY_LEVELS                                 ${toUhexFormat(
-		priority_levels
-	)}
-
+#define PRIORITY_LEVELS                                 ${toUhexFormat(priority_levels)}
 
 #define PRE_TASK_HOOK                                   ${PreTaskHook}   
 					
@@ -124,18 +148,24 @@ export const getHFileText = (
 #define CONFORMANCE_CLASS                               ${ConformanceClass} 
 `.trim();
 
+
 // Return a string containing the C macros defined in the JSON file.
-export const generateCFile = (priority_list, task_list, PriorityLevelsSize) => {
-	return `
-	/***********************************************************************************/
-	/*				    			External constants		         				   */
-	/***********************************************************************************/
-	uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
-	
-	OS_Tasks Tasks[] = ${listToCurlyBraces(task_list)};
-	
-	TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
-		PriorityLevelsSize
-	)};
-	`.trim();
-};
+export const getCFileText = (
+	priority_list, 
+	PriorityLevelsSize,
+	taskList
+) => 
+	`
+/***********************************************************************************/
+/*				    			External constants		         				   */
+/***********************************************************************************/
+uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
+
+TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(PriorityLevelsSize)};
+
+OS_Task Tasks[TASK_COUNT] =
+{
+	${getAllTaskInfoText(taskList)}
+}
+`.trim();
+

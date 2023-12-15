@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import MultiTypeInput from "./MultiTypeInput";
 import Table from "./Table";
-import { generateHFile } from "./generator";
+import { generateCFile, generateHFile } from "./generator";
 import { getTaskDefaults } from "./utils";
 
 import staticJsonData from "./OS_static_props.json";
@@ -46,6 +46,8 @@ const App = () => {
 	const generateFilesHandler = () => {
 		const hCode = generateHFile(taskList, jsonData);
 		createAndDownloadFile("test.h", hCode);
+		const cCode = generateCFile(taskList);
+		createAndDownloadFile("test.c", cCode);
 	};
 
 	return (
