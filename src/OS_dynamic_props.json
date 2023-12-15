@@ -1,8 +1,8 @@
 {
 	"TaskList": {
-		"Task-ID": 0,
-		"Name": "Task1",
-		"StackSize": 512,
+		"Task-ID": 1,
+		"Name": "",
+		"StackSize": 0,
 		"AutoStart": false,
 		"Priority": 0,
 		"Number Of Activation": 0,

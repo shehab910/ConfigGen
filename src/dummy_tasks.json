@@ -8,7 +8,7 @@
 		"Number Of Activation": 0,
 		"Preemptive Mode": "Full Preemptive",
 		"Application Mode": "",
-		"EventList": []
+		"EventList": "<Event list value>"
 	},
 	{
 		"Task-ID": 0,
@@ -19,7 +19,7 @@
 		"Number Of Activation": 0,
 		"Preemptive Mode": "Full Preemptive",
 		"Application Mode": "",
-		"EventList": []
+		"EventList": "<Event list value>"
 	},
 	{
 		"Task-ID": 0,
@@ -30,6 +30,6 @@
 		"Number Of Activation": 0,
 		"Preemptive Mode": "Full Preemptive",
 		"Application Mode": "",
-		"EventList": []
+		"EventList": "<Event list value>"
 	}
 ]
