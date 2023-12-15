@@ -6,9 +6,6 @@ const MultiTypeInput = ({
 	onChangeHandler,
 	showLabel = true,
 }) => {
-	if (Array.isArray(parent[keyName])) {
-		console.log("data[keyName]", data[keyName]);
-	}
 	return (
 		<div>
 			<label>

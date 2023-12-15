@@ -4,7 +4,14 @@ import dynamicJsonData from "./OS_dynamic_props.json";
 import initialJsonData from "./OS_default.json";
 import MultiTypeInput from "./MultiTypeInput";
 
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-c";
+import "prismjs/themes/prism.css"; //Example style, you can use another
+
 import "./App.css";
+import { generateHFile } from "./generator";
 
 const getTaskDefaults = () => {
 	const taskList = { ...dynamicJsonData.TaskList };
@@ -24,6 +31,8 @@ const App = () => {
 	const [jsonData, setJsonData] = useState(initialJsonData);
 
 	const [taskList, setTaskList] = useState([getTaskDefaults()]);
+
+	const [code, setCode] = useState(``);
 
 	const handleStaticInputChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -90,6 +99,26 @@ const App = () => {
 		);
 	};
 
+	const clearHandler = () => {
+		setJsonData(initialJsonData);
+		setTaskList([getTaskDefaults()]);
+	};
+
+	const createAndDownloadFile = (fileName, fileContent) => {
+		const element = document.createElement("a");
+		const file = new Blob([fileContent], { type: "text/plain" });
+		element.href = URL.createObjectURL(file);
+		element.download = fileName;
+		document.body.appendChild(element); // Required for this to work in FireFox
+		element.click();
+	};
+
+	const generateFilesHandler = () => {
+		const hCode = generateHFile(0, 0, "", "", "", "", "", "", "");
+		setCode(hCode);
+		createAndDownloadFile("test.h", hCode);
+	};
+
 	return (
 		<div>
 			<h1>Enter JSON Information</h1>
@@ -105,39 +134,24 @@ const App = () => {
 			>
 				Add Task
 			</button>
+			<button onClick={clearHandler}>Clear</button>
+			{/* generate button */}
+			<button onClick={generateFilesHandler}>Generate Files</button>
 			<h2>Entered JSON Information</h2>
 			<pre>{JSON.stringify(jsonData, null, 2)}</pre>
 			<pre>{JSON.stringify(taskList, null, 2)}</pre>
+			<Editor
+				value={code}
+				onValueChange={(code) => setCode(code)}
+				highlight={(code) => highlight(code, languages.c)}
+				padding={10}
+				style={{
+					fontFamily: '"Fira code", "Fira Mono", monospace',
+					fontSize: 12,
+				}}
+			/>
 		</div>
 	);
 };
 
 export default App;
-// TODO: Generate button
-// TODO: Clear button --> yrg3 ll default data
-// TODO: Add task button
-//list to curly braces function:
-// `
-// list_to_curly_braces = lambda x: "{" + ", ".join(list(map(str, x))) + "}"
-// `
-//generate c file function:
-// `
-// def generate_c_file(priority_list: list[int],
-// task_list: list[str],
-// PriorityLevelsSize: list[int]):
-// """
-// Return a string containing the C macros defined in the JSON file.
-// """
-// file = f"""
-// /***********************************************************************************/
-// /*				    			External constants		         				   */
-// /***********************************************************************************/
-// uint8 PriorityLevels [PRIORITY_LEVELS] = {list_to_curly_braces(priority_list)};
-
-// OS_Tasks Tasks[] = {list_to_curly_braces(task_list)};
-
-// TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = {list_to_curly_braces(PriorityLevelsSize)};
-
-// """
-// return file.strip()
-// `

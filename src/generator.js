@@ -1,5 +1,7 @@
 const toUhexFormat = (x) => `(0x${x.toString(16).toUpperCase()}U)`;
 
+const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
+
 /**
  * Generates an H file with specified parameters.
  *
@@ -55,3 +57,19 @@ export const generateHFile = (
 /* system conformance class */
 #define CONFORMANCE_CLASS                               ${ConformanceClass} 
 `.trim();
+
+// Return a string containing the C macros defined in the JSON file.
+export const generateCFile = (priority_list, task_list, PriorityLevelsSize) => {
+	return `
+	/***********************************************************************************/
+	/*				    			External constants		         				   */
+	/***********************************************************************************/
+	uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
+	
+	OS_Tasks Tasks[] = ${listToCurlyBraces(task_list)};
+	
+	TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
+		PriorityLevelsSize
+	)};
+	`.trim();
+};
