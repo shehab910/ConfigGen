@@ -1,0 +1,32 @@
+body {
+	background-color: #121212; /* Dark background color */
+	color: #fff; /* Light text color */
+	font-family: Arial, sans-serif;
+	margin: 0;
+}
+
+.dark-mode-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+.dark-mode-table th,
+.dark-mode-table td {
+	border: 1px solid #444; /* Dark border color */
+	padding: 12px;
+	text-align: left;
+}
+
+.dark-mode-table th {
+	background-color: #333; /* Dark header background color */
+	color: #fff; /* Light header text color */
+}
+
+.dark-mode-table tbody tr:nth-child(even) {
+	background-color: #333; /* Dark alternate row background color */
+}
+
+.dark-mode-table tbody tr:nth-child(odd) {
+	background-color: #222; /* Dark alternate row background color */
+}

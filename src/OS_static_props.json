@@ -1,0 +1,12 @@
+{
+  "StartupHook": false,
+  "ShutdownHook": false,
+  "ErrorHook": false,
+  "PreTaskHook": false,
+  "PostTaskHook": false,
+  "Error Checking Type": [
+    "Standard",
+    "Extended"
+  ],
+  "bahaa": "shehab"
+}

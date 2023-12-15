@@ -1,0 +1,17 @@
+{
+	"TaskList": {
+		"Task-ID": 0,
+		"Name": "Task1",
+		"StackSize": 512,
+		"AutoStart": false,
+		"Priority": 0,
+		"Number Of Activation": 0,
+		"Preemptive Mode": ["Full Preemptive", "Non Preemptive"],
+		"Application Mode": "",
+		"EventList": []
+	},
+	"InternalResource": [],
+	"ResourceList": [],
+	"CounterList": [],
+	"AlarmList": []
+}
