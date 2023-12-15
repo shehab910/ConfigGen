@@ -1,18 +1,13 @@
 import { useState } from "react";
-import staticJsonData from "./OS_static_props.json";
-import initialJsonData from "./OS_default.json";
+
 import MultiTypeInput from "./MultiTypeInput";
-
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-c";
-import "prismjs/themes/prism.css"; //Example style, you can use another
-
-import "./App.css";
+import Table from "./Table";
 import { generateHFile } from "./generator";
 import { getTaskDefaults } from "./utils";
-import Table from "./Table";
+
+import staticJsonData from "./OS_static_props.json";
+import defaultJsonData from "./OS_default.json";
+import "./App.css";
 
 const createAndDownloadFile = (fileName, fileContent) => {
 	const element = document.createElement("a");
@@ -25,12 +20,8 @@ const createAndDownloadFile = (fileName, fileContent) => {
 
 const App = () => {
 	// Assume jsonData is imported from an external file
-
-	const [jsonData, setJsonData] = useState(initialJsonData);
-
+	const [jsonData, setJsonData] = useState(defaultJsonData);
 	const [taskList, setTaskList] = useState([getTaskDefaults()]);
-
-	const [code, setCode] = useState(``);
 
 	const handleStaticInputChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -53,8 +44,7 @@ const App = () => {
 	};
 
 	const generateFilesHandler = () => {
-		const hCode = generateHFile(0, 0, "", "", "", "", "", "", "");
-		setCode(hCode);
+		const hCode = generateHFile(taskList, jsonData);
 		createAndDownloadFile("test.h", hCode);
 	};
 
@@ -62,7 +52,6 @@ const App = () => {
 		<div>
 			<h1>Enter JSON Information</h1>
 			{renderStaticInputs()}
-			{/* button to add a new task to the task list */}
 			<Table
 				setJsonData={setJsonData}
 				setTaskList={setTaskList}
@@ -73,16 +62,6 @@ const App = () => {
 			<h2>Entered JSON Information</h2>
 			<pre>{JSON.stringify(jsonData, null, 2)}</pre>
 			<pre>{JSON.stringify(taskList, null, 2)}</pre>
-			<Editor
-				value={code}
-				onValueChange={(code) => setCode(code)}
-				highlight={(code) => highlight(code, languages.c)}
-				padding={10}
-				style={{
-					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 12,
-				}}
-			/>
 		</div>
 	);
 };

@@ -2,7 +2,7 @@
 	"TaskList": {
 		"Task-ID": 0,
 		"Name": "",
-		"StackSize": 0,
+		"StackSize": 512,
 		"AutoStart": false,
 		"Priority": 0,
 		"Number Of Activation": 0,

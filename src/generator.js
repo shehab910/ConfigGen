@@ -3,6 +3,72 @@ const toUhexFormat = (x) => `(0x${x.toString(16).toUpperCase()}U)`;
 const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
 
 /**
+ * Gets the number of activations from a task object.
+ * If the number of activations is 0, returns 1.
+ * @param {object} task - The task object.
+ * @returns {number} - The number of activations.
+ */
+const getNumberOfActivation = (task) =>
+	task["Number Of Activation"] === 0 ? 1 : task["Number Of Activation"];
+
+/**
+ * Gets the list of each priority level size (number of each task * number of activations).
+ * @param {Array<object>} taskList - The list of task objects.
+ * @returns {Array<number>} - The list of priority level sizes.
+ */
+const getPriorityLevelsSize = (taskList) => {
+	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
+	const size = Array(priorityLevelsSorted.length).fill(0);
+
+	taskList.forEach((task) => {
+		const priority = task["Priority"];
+		const priorityIndex = priorityLevelsSorted.indexOf(priority);
+		size[priorityIndex] += getNumberOfActivation(task);
+	});
+
+	return size;
+};
+
+/**
+ * Converts a boolean value to "STD_ON" if true, or "STD_OFF" if false.
+ * @param {boolean} bool - The boolean value to be converted.
+ * @returns {string} - "STD_ON" if the boolean is true, "STD_OFF" otherwise.
+ */
+const getSTD_ON_OFF = (bool) => {
+	return bool ? "STD_ON" : "STD_OFF";
+};
+
+const getPriorityLevelsSorted = (taskList = []) => {
+	const set = new Set();
+	taskList.forEach((item) => set.add(item.Priority));
+	return Array.from(set).sort((a, b) => b - a);
+};
+
+const getConformancesClass = (taskList) => {
+	const priorityLevelsSize = getPriorityLevelsSize(taskList);
+	for (let i = 0; i < priorityLevelsSize.length; i++) {
+		if (priorityLevelsSize[i] > 1) {
+			return "BCC2_CLASS";
+		}
+		return "BCC1_CLASS";
+	}
+};
+
+export const generateHFile = (taskList, jsonData) => {
+	return getHFileText(
+		taskList.length,
+		getPriorityLevelsSorted(taskList).length,
+		getSTD_ON_OFF(jsonData.StartupHook),
+		getSTD_ON_OFF(jsonData.ShutdownHook),
+		getSTD_ON_OFF(jsonData.PreTaskHook),
+		getSTD_ON_OFF(jsonData.PostTaskHook),
+		getSTD_ON_OFF(jsonData.ErrorHook),
+		jsonData["Error Checking Type"],
+		getConformancesClass(taskList)
+	);
+};
+
+/**
  * Generates an H file with specified parameters.
  *
  * @param {number} number_of_tasks - The number of tasks.
@@ -16,7 +82,7 @@ const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
  * @param {string} ConformanceClass - The Conformance Class.
  * @returns {string} - The generated H file.
  */
-export const generateHFile = (
+export const getHFileText = (
 	number_of_tasks,
 	priority_levels,
 	StartupHook,
