@@ -44,12 +44,25 @@ const getPriorityLevelsSorted = (taskList = []) => {
 
 const getConformancesClass = (taskList) => {
 	const priorityLevelsSize = getPriorityLevelsSize(taskList);
+	let CC = "";
+	let foundExtendedTask = false;
+	taskList.forEach((task) => {
+		if (task["Task Type"] === "Extended") {
+			CC = "ECC";
+			foundExtendedTask = true;
+		}
+	});
+	if (!foundExtendedTask) {
+		CC = "BCC";
+	}
 	for (let i = 0; i < priorityLevelsSize.length; i++) {
 		if (priorityLevelsSize[i] > 1) {
-			return "BCC2_CLASS";
+			CC += "2_CLASS";
+			return CC;
 		}
-		return "BCC1_CLASS";
 	}
+	CC += "1_CLASS" ;
+	return CC;
 };
 
 const getTaskInfoText = (task,taskList) => {
@@ -215,15 +228,16 @@ uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
 
 TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(PriorityLevelsSize)};
 
+${getTaskListFlagsText(taskList)}
+
+${getTaskListStackText(taskList)}
+
+${getTaskListDynamicText(taskList)}
+
 OS_Task Tasks[TASK_COUNT] =
 {
 	${getTaskListInfoText(taskList)}
 }
 
-${getTaskListFlagsText(taskList)}
-
-${getTaskListDynamicText(taskList)}
-
-${getTaskListStackText(taskList)}
 `.trim();
 

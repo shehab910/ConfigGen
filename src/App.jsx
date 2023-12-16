@@ -69,3 +69,21 @@ const App = () => {
 };
 
 export default App;
+
+/*TODO*/
+/*
+==> if task["Task Type"] === "Extended" then task["Number Of Activation"] = "1"
+
+==> download Cfg files in specific folder
+
+==> add Internal Resource Table ["name"]
+
+==> add a new parameter to the task: "Internal Resource" ["choose name from Internal Resource Table"]
+
+==> in cfg.c file, add InternalResource consists of: "ceiling priority", "internalResourceDynamic"
+		ceiling priority : highest priority of tasks that can access this resource
+		internalResourceDynamic : &internalResourceDynamic
+
+==> in cfg.c file, add internalREsourceDynamic for each internalResource (see OS_cfg.c sayed file)
+		default parameters 
+*/

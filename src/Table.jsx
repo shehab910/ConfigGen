@@ -11,6 +11,7 @@ const Table = ({ taskList, setJsonData, setTaskList }) => {
 		setTaskList((prevData) => {
 			const newData = [...prevData];
 			newData[i][name] = type === "checkbox" ? checked : value;
+			// newData[i]["Task Type"] = value === "Extended" ? newData[i]["Number Of Activation"] = "1" : newData[i]["Number Of Activation"];
 			return newData;
 		});
 	};
