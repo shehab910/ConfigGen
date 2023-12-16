@@ -45,9 +45,9 @@ const App = () => {
 
 	const generateFilesHandler = () => {
 		const hCode = generateHFile(taskList, jsonData);
-		createAndDownloadFile("test.h", hCode);
+		createAndDownloadFile("OS_Cfg.h", hCode);
 		const cCode = generateCFile(taskList);
-		createAndDownloadFile("test.c", cCode);
+		createAndDownloadFile("OS_Cfg.c", cCode);
 	};
 
 	return (

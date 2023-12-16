@@ -8,8 +8,8 @@ const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
  * @param {object} task - The task object.
  * @returns {number} - The number of activations.
  */
-const getNumberOfActivation = (task) =>
-	task["Number Of Activation"] === 0 ? 1 : task["Number Of Activation"];
+const getNumberOfActivation = (task) => 
+	task["Number Of Activation"] === "0" ? 1 : Number(task["Number Of Activation"]);
 
 /**
  * Gets the list of each priority level size (number of each task * number of activations).
@@ -19,13 +19,11 @@ const getNumberOfActivation = (task) =>
 const getPriorityLevelsSize = (taskList) => {
 	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
 	const size = Array(priorityLevelsSorted.length).fill(0);
-
 	taskList.forEach((task) => {
-		const priority = task["Priority"];
+		const priority = Number(task["Priority"]);
 		const priorityIndex = priorityLevelsSorted.indexOf(priority);
 		size[priorityIndex] += getNumberOfActivation(task);
 	});
-
 	return size;
 };
 
@@ -40,7 +38,7 @@ const getSTD_ON_OFF = (bool) => {
 
 const getPriorityLevelsSorted = (taskList = []) => {
 	const set = new Set();
-	taskList.forEach((item) => set.add(item.Priority));
+	taskList.forEach((task) => set.add(Number(task["Priority"])));
 	return Array.from(set).sort((a, b) => b - a);
 };
 
@@ -60,20 +58,74 @@ return`
 		.TaskStaticPriority = ${task["Priority"]},
 		.TaskID = ${task["Task-ID"]},
 		.ApplicationMode = ${task["Application Mode"]},
-		.NumOfActivationRequests = ${task["Number Of Activation"]},
-		.PriorityQueueIndex = ${getPriorityLevelsSorted(taskList).indexOf(task["Priority"])},
-		.TaskFlags ,
-		.TaskStack ,
+		.NumOfActivationRequests = ${getNumberOfActivation(task)},
+		.PriorityQueueIndex = ${getPriorityLevelsSorted(taskList).indexOf(Number(task["Priority"]))},
+		.TaskFlags = &Task${taskList.indexOf(task)+1}Flags,
+		.TaskStack = &Task${taskList.indexOf(task)+1}Stack,
 		.EntryPoint = ${task["Entry Point"]},
 		.InternalResource ,
-		.TaskDynamics
+		.TaskDynamics = &Task${taskList.indexOf(task)+1}Dynamic
 	}`.trim();
 };
 
-const getAllTaskInfoText = (taskList) => {
+const getTaskListInfoText = (taskList) => {
 	return taskList.map((task) => getTaskInfoText(task,taskList)).join(",\n\t");
 }
 
+const getTaskSchedulingPolicy = (task) => {
+	return task["Preemptive Mode"] === "Full Preemptive" ? "FULL_PREEMPTIVE_SCHEDULING" : "NON_PREEMPTIVE_SCHEDULING";
+}
+
+const getTaskFlagsText = (task) => {
+	return `
+{
+	.Type = ${task["Task Type"]},
+	.TaskSchedulingPolicy = ${getTaskSchedulingPolicy(task)}
+}`.trim();
+};
+
+const getTaskListFlagsText = (taskList) => {
+	return taskList.map((task,i) => `TaskFlagsType Task${i+1}Flags =\n${getTaskFlagsText(task)};`.trim()).join("\n");
+
+}
+
+const getTaskCurrentPriority = (task,taskList) => {
+	return task["Preemptive Mode"] === "Full Preemptive" ? task["Priority"] : getPriorityLevelsSorted(taskList)[0];
+}
+
+const getTaskDynamicText = (task,taskList) => {
+	return `
+{
+	.Context = NULL_PTR,
+	.Resources = NULL_PTR,
+	.EventsPending = 0,
+	.EventsWaiting = 0,
+	.TaskCurrentPriority = ${getTaskCurrentPriority(task,taskList)},
+	.TaskState = SUSPENDED,
+	.PendingActivationRequests = 0,
+	.TaskIsPreempted = FALSE	
+}`.trim();
+};
+
+const getTaskListDynamicText = (taskList) => {
+	return taskList.map((task,i) => `TaskDynamicType Task${i+1}Dynamic =\n${getTaskDynamicText(task,taskList)};`.trim()).join("\n");
+}
+
+// TaskStackType TaskStack =
+// {
+// 	.StackBase = (void*)0x80006546,
+// 	.StackSize = 200
+// };
+const getTaskStackText = (task) => {
+	return `
+{
+	.StackBase = NULL_PTR,
+	.StackSize = ${task["Stack Size"]}
+}`.trim();
+}
+const getTaskListStackText = (taskList) => {
+	return taskList.map((task,i) => `TaskStackType Task${i+1}Stack =\n${getTaskStackText(task)};`.trim()).join("\n");
+}
 
 export const generateHFile = (taskList, jsonData) => {
 	return getHFileText(
@@ -165,7 +217,13 @@ TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(Prio
 
 OS_Task Tasks[TASK_COUNT] =
 {
-	${getAllTaskInfoText(taskList)}
+	${getTaskListInfoText(taskList)}
 }
+
+${getTaskListFlagsText(taskList)}
+
+${getTaskListDynamicText(taskList)}
+
+${getTaskListStackText(taskList)}
 `.trim();
 

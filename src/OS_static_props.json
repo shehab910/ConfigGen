@@ -4,6 +4,5 @@
 	"ErrorHook": false,
 	"PreTaskHook": false,
 	"PostTaskHook": false,
-	"Error Checking Type": ["Standard", "Extended"],
-	"bahaa": ""
+	"Error Checking Type": ["Standard", "Extended"]
 }
