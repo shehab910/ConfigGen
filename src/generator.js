@@ -80,7 +80,7 @@ const getTaskInfoText = (task, taskList) => {
 		.TaskFlags = &Task${taskList.indexOf(task) + 1}Flags,
 		.TaskStack = &Task${taskList.indexOf(task) + 1}Stack,
 		.EntryPoint = ${task["Entry Point"]},
-		.InternalResource ,
+		.InternalResource = &${task["Internal Resource"].replace(" ", "")}
 		.TaskDynamics = &Task${taskList.indexOf(task) + 1}Dynamic
 	}`.trim();
 };
@@ -143,11 +143,7 @@ const getTaskListDynamicText = (taskList) => {
 		.join("\n");
 };
 
-// TaskStackType TaskStack =
-// {
-// 	.StackBase = (void*)0x80006546,
-// 	.StackSize = 200
-// };
+
 const getTaskStackText = (task) => {
 	return `
 {
@@ -168,11 +164,9 @@ const getIRCelingPriority = (IR, taskList) => {
 	const filteredTasks = taskList.filter(
 		(task) => task["Internal Resource"] === IR["Resource Name"]
 	);
-	console.log(filteredTasks);
 	//get the highest priority of these tasks
 	const highestPriority = Math.max(
 		...filteredTasks.map((task) => {
-			// console.log(task["Priority"], Number(task["Priority"]));
 			return Number(task["Priority"]);
 		})
 	);
@@ -182,16 +176,34 @@ const getIRCelingPriority = (IR, taskList) => {
 const getIRText = (IR, IRIndex, taskList) => {
 	return `
 	Os_InteranlResource ${IR["Resource Name"].replace(" ", "")} =
-	{
-		.CeilingPriority = ${getIRCelingPriority(IR, taskList)},
-		.InternalResourceDynamics = &InernalResourceDynamic${IRIndex + 1}
-	};
+{
+	.CeilingPriority = ${getIRCelingPriority(IR, taskList)},
+	.InternalResourceDynamics = &InernalResourceDynamic${IRIndex + 1}
+};
 	`.trim();
 };
 
 const getIRListText = (IRList, taskList) => {
 	return IRList.map((IR, i) => getIRText(IR, i, taskList)).join("\n");
 };
+
+const getIRDynamicText = (IRIndex) => {
+	return `
+	Os_InernalResourceDynamic InternalResourceDynamic${IRIndex+1}
+{
+	.TakenTaskPriority = 0,
+	.TakenFlag = FALSE
+};
+	`.trim();
+}
+
+const getIRDynamicListText = (IRList) => {
+	return IRList.map((IR, i) => getIRDynamicText(i)).join("\n");
+}
+
+
+
+
 
 /**
  * Generates an H file with specified parameters.
@@ -268,6 +280,8 @@ TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
 ${getTaskListFlagsText(taskList)}
 
 ${getTaskListStackText(taskList)}
+
+${getIRDynamicListText(internalResourceList)}
 
 ${getIRListText(internalResourceList, taskList)}
 

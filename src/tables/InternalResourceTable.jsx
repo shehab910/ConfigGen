@@ -16,7 +16,7 @@ const InternalResourceTable = ({
 			newTask["Resource-ID"] =
 				+internalResourceList[internalResourceList.length - 1]["Resource-ID"] +
 				1;
-			newTask["Resource Name"] = "Resource " + newTask["Resource-ID"];
+			newTask["Resource Name"] = "InternalResource " + newTask["Resource-ID"];
 		}
 		setInternalResourceList((prevData) => [...prevData, newTask]);
 	};

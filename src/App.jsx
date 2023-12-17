@@ -68,8 +68,10 @@ const App = () => {
 	};
 
 	return (
-		<div className="root">
-			<h1>Enter JSON Information</h1>
+		<div className="root" >
+			<nav className="mynavbar">
+				<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
+			</nav>
 			{renderStaticInputs()}
 			<InternalResourceTable
 				internalResourceList={internalResourceList}
@@ -80,7 +82,7 @@ const App = () => {
 				taskList={taskList}
 				taskListSchema={taskListSchema}
 			/>
-			<button onClick={generateFilesHandler}>Generate Files</button>
+			<button className="button" onClick={generateFilesHandler}>Generate Files</button>
 			<h2>Entered JSON Information</h2>
 			<pre>{JSON.stringify(jsonData, null, 2)}</pre>
 			<pre>{JSON.stringify(taskList, null, 2)}</pre>
@@ -95,9 +97,6 @@ export default App;
 
 ==> download Cfg files in specific folder
 
-==> in cfg.c file, add InternalResource consists of: "ceiling priority", "internalResourceDynamic"
-		ceiling priority : highest priority of tasks that can access this resource
-		internalResourceDynamic : &internalResourceDynamic
 
 ==> in cfg.c file, add internalREsourceDynamic for each internalResource (see OS_cfg.c sayed file)
 		default parameters 

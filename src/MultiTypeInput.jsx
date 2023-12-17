@@ -12,7 +12,7 @@ const MultiTypeInput = ({
 			<label>
 				{showLabel && keyName}
 				{Array.isArray(parent[keyName]) && (
-					<select
+					<select className="myComboBox"
 						name={keyName}
 						value={data[keyName]}
 						onChange={onChangeHandler}
@@ -30,7 +30,7 @@ const MultiTypeInput = ({
 				)}
 
 				{!Array.isArray(parent[keyName]) && (
-					<input
+					<input className="myinput"
 						type={typeof parent[keyName] === "boolean" ? "checkbox" : "text"}
 						name={keyName}
 						value={data[keyName] === undefined ? "" : data[keyName]}

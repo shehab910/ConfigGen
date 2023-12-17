@@ -2,15 +2,15 @@ body {
 	background-color: #121212; /* Dark background color */
 	color: #fff; /* Light text color */
 	font-family: Arial, sans-serif;
-	margin: 0;
 }
 .root {
 	margin: 1rem;
 }
 .dark-mode-table {
 	border-collapse: collapse;
-	margin-top: 20px;
+	margin-top: 40px;
 	overflow-y: scroll;
+	max-width: 100%;
 }
 
 .dark-mode-table th,
@@ -18,11 +18,13 @@ body {
 	border: 1px solid #444; /* Dark border color */
 	padding: 12px;
 	text-align: center;
+	height: auto;
 }
 
 .dark-mode-table th {
 	background-color: #333; /* Dark header background color */
 	color: #fff; /* Light header text color */
+	min-width: auto;
 }
 
 .dark-mode-table tbody tr:nth-child(even) {
@@ -33,6 +35,90 @@ body {
 	background-color: #222; /* Dark alternate row background color */
 }
 
-button {
-	margin: 10px;
-}
+.myheader {
+	width: 76%;
+	background-color: #333; /* Darker background color for the header */
+	color: #fff; /* White text color for the header */
+	padding: 20px; /* Padding for the header content */
+	text-align: center; /* Center-align text */
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border-radius: 1000px;
+	
+  }
+  .mynavbar {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	background-color: #555; /* Even darker background color for the navigation bar */
+  }
+  
+  .mynavbar a {
+	color: #fff;
+	padding: 14px 20px;
+	text-decoration: none;
+	text-align: center;
+  }
+  
+  .mynavbar a:hover {
+	background-color: #777; /* Darker background color on hover */
+  }
+
+  .myinput {
+	width: 100%;
+	
+  }
+
+  .myinput[type="checkbox"] {
+	width: 50px; /* Adjust width for checkbox */
+  	margin-bottom: 0; /* Remove extra margin for checkbox */
+  }
+
+  .myComboBox {
+	/* display: block; */
+	/* width: 100%; */
+	/* padding: 8px; */
+	margin: 5px;
+	font-size: 13px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	background-color: #fff; /* Background color */
+	color: #333; /* Text color */
+	cursor: pointer;
+  }
+  
+  /* Styling for the arrow icon */
+  .myComboBox::after {
+	content: "\25BC"; /* Unicode character for a down arrow */
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	transform: translateY(-50%);
+  }
+  
+  /* Styling for option items */
+  .myComboBox option {
+	background-color: #fff; /* Background color for options */
+	color: #333; /* Text color for options */
+	cursor: pointer;
+  }
+  
+  /* Styling for hover state of option items */
+  .myComboBox option:hover {
+	background-color: #3e3c3c; /* Background color on hover */
+  }
+  
+  /* Styling for focus state of the combo box */
+  .myComboBox:focus {
+	outline: none;
+	border-color: #3498db; /* Border color on focus */
+	box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Box shadow on focus */
+  }
+  
+  /* Styling for disabled state */
+  .myComboBox:disabled {
+	background-color: #f0f0f0; /* Light gray background for disabled state */
+	color: #888; /* Gray text color for disabled state */
+	cursor: not-allowed; /* Change cursor for disabled state */
+  }
