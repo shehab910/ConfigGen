@@ -1,12 +1,16 @@
 import dynamicJsonData from "./OS_dynamic_props.json";
-export const getTaskDefaults = () => {
-	const taskList = { ...dynamicJsonData.TaskList };
+export const getItemsDefaults = (schema) => {
+	const itemList = { ...schema };
 	// map all array to the first element of that array
 	// if the array is empty, map it to an empty string
-	Object.keys(taskList).forEach((key) => {
-		if (Array.isArray(taskList[key])) {
-			taskList[key] = taskList[key][0] || "";
+	Object.keys(itemList).forEach((key) => {
+		if (Array.isArray(itemList[key])) {
+			itemList[key] = itemList[key][0] || "";
 		}
 	});
-	return taskList;
+	return itemList;
 };
+export const getTasksDefaults = () =>
+	getItemsDefaults(dynamicJsonData.TaskList);
+export const getInternalResourceDefaults = () =>
+	getItemsDefaults(dynamicJsonData.InternalResource);

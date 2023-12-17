@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import MultiTypeInput from "./MultiTypeInput";
-import Table from "./Table";
+// import Table from "./Table";
 import { generateCFile, generateHFile } from "./generator";
-import { getTaskDefaults } from "./utils";
+import { getTasksDefaults } from "./utils";
 
 import staticJsonData from "./OS_static_props.json";
 import defaultJsonData from "./OS_default.json";
 import "./App.css";
+import TaskTable from "./tables/TaskTable";
+import InternalResourceTable from "./tables/InternalResourceTable";
+import dynamicJsonData from "./OS_dynamic_props.json";
 
 const createAndDownloadFile = (fileName, fileContent) => {
 	const element = document.createElement("a");
@@ -21,7 +24,21 @@ const createAndDownloadFile = (fileName, fileContent) => {
 const App = () => {
 	// Assume jsonData is imported from an external file
 	const [jsonData, setJsonData] = useState(defaultJsonData);
-	const [taskList, setTaskList] = useState([getTaskDefaults()]);
+	const [taskList, setTaskList] = useState([getTasksDefaults()]);
+	const [taskListSchema, setTaskListSchema] = useState(
+		dynamicJsonData.TaskList
+	);
+	const [internalResourceList, setInternalResourceList] = useState([]);
+
+	useEffect(() => {
+		setTaskListSchema((prevData) => {
+			const newData = { ...prevData };
+			newData["Internal Resource"] = internalResourceList.map(
+				(item) => item["Resource Name"]
+			);
+			return newData;
+		});
+	}, [internalResourceList]);
 
 	const handleStaticInputChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -46,20 +63,23 @@ const App = () => {
 	const generateFilesHandler = () => {
 		const hCode = generateHFile(taskList, jsonData);
 		createAndDownloadFile("OS_Cfg.h", hCode);
-		const cCode = generateCFile(taskList);
+		const cCode = generateCFile(taskList, internalResourceList);
 		createAndDownloadFile("OS_Cfg.c", cCode);
 	};
 
 	return (
-		<div>
+		<div className="root">
 			<h1>Enter JSON Information</h1>
 			{renderStaticInputs()}
-			<Table
-				setJsonData={setJsonData}
+			<InternalResourceTable
+				internalResourceList={internalResourceList}
+				setInternalResourceList={setInternalResourceList}
+			/>
+			<TaskTable
 				setTaskList={setTaskList}
 				taskList={taskList}
+				taskListSchema={taskListSchema}
 			/>
-
 			<button onClick={generateFilesHandler}>Generate Files</button>
 			<h2>Entered JSON Information</h2>
 			<pre>{JSON.stringify(jsonData, null, 2)}</pre>
@@ -72,13 +92,8 @@ export default App;
 
 /*TODO*/
 /*
-==> if task["Task Type"] === "Extended" then task["Number Of Activation"] = "1"
 
 ==> download Cfg files in specific folder
-
-==> add Internal Resource Table ["name"]
-
-==> add a new parameter to the task: "Internal Resource" ["choose name from Internal Resource Table"]
 
 ==> in cfg.c file, add InternalResource consists of: "ceiling priority", "internalResourceDynamic"
 		ceiling priority : highest priority of tasks that can access this resource
@@ -86,4 +101,6 @@ export default App;
 
 ==> in cfg.c file, add internalREsourceDynamic for each internalResource (see OS_cfg.c sayed file)
 		default parameters 
+
+==> 
 */

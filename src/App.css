@@ -4,18 +4,20 @@ body {
 	font-family: Arial, sans-serif;
 	margin: 0;
 }
-
+.root {
+	margin: 1rem;
+}
 .dark-mode-table {
-	width: 100%;
 	border-collapse: collapse;
 	margin-top: 20px;
+	overflow-y: scroll;
 }
 
 .dark-mode-table th,
 .dark-mode-table td {
 	border: 1px solid #444; /* Dark border color */
 	padding: 12px;
-	text-align: left;
+	text-align: center;
 }
 
 .dark-mode-table th {

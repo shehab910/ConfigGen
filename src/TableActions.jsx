@@ -1,24 +1,10 @@
-import initialJsonData from "./OS_default.json";
-import { getTaskDefaults } from "./utils";
 /* eslint-disable react/prop-types */
 
-const TableActions = ({ taskList, setTaskList, setJsonData }) => {
-	const clearHandler = () => {
-		setJsonData(initialJsonData);
-		setTaskList([getTaskDefaults()]);
-	};
+const TableActions = ({ onAddHandler, tableName = "", onClearHandler }) => {
 	return (
 		<>
-			<button
-				onClick={() => {
-					const newTask = getTaskDefaults();
-					newTask["Task-ID"] = +taskList[taskList.length - 1]["Task-ID"] + 1;
-					setTaskList((prevData) => [...prevData, newTask]);
-				}}
-			>
-				Add Task
-			</button>
-			<button onClick={clearHandler}>Clear</button>
+			<button onClick={onAddHandler}>Add {tableName}</button>
+			<button onClick={onClearHandler}>Clear</button>
 		</>
 	);
 };

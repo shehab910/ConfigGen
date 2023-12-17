@@ -5,6 +5,7 @@ const MultiTypeInput = ({
 	data,
 	onChangeHandler,
 	showLabel = true,
+	disabled = false,
 }) => {
 	return (
 		<div>
@@ -15,8 +16,11 @@ const MultiTypeInput = ({
 						name={keyName}
 						value={data[keyName]}
 						onChange={onChangeHandler}
+						disabled={disabled}
 					>
-						{/* <option value="">Select {keyName}</option> */}
+						<option disabled value="">
+							Select {keyName}
+						</option>
 						{parent[keyName].map((item, index) => (
 							<option key={index} value={item}>
 								{item}
@@ -34,6 +38,7 @@ const MultiTypeInput = ({
 							typeof data[keyName] === "boolean" ? data[keyName] : undefined
 						}
 						onChange={onChangeHandler}
+						disabled={disabled}
 					/>
 				)}
 			</label>

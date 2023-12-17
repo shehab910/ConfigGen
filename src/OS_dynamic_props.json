@@ -6,11 +6,15 @@
 		"AutoStart": false,
 		"Priority": "0",
 		"Number Of Activation": "0",
+		"Internal Resource": [],
 		"Preemptive Mode": ["Full Preemptive", "Non Preemptive"],
 		"Task Type": ["Basic", "Extended"],
 		"Application Mode": ""
 	},
-	"InternalResource": [],
+	"InternalResource": {
+		"Resource-ID": 0,
+		"Resource Name": "Resource 0"
+	},
 	"ResourceList": [],
 	"CounterList": [],
 	"AlarmList": []

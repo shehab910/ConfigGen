@@ -1,35 +1,52 @@
 import MultiTypeInput from "./MultiTypeInput";
-import dynamicJsonData from "./OS_dynamic_props.json";
 import TableActions from "./TableActions";
 
 /* eslint-disable react/prop-types */
 
-const Table = ({ taskList, setJsonData, setTaskList }) => {
-	const taskListSchema = dynamicJsonData.TaskList;
+const Table = ({
+	itemList,
+	setItemList,
+	itemListDefault,
+	onAddHandler,
+	itemListSchema,
+	tableName,
+	onClearHandler,
+}) => {
 	const handleDynamicInputChange = (e, i) => {
 		const { name, value, type, checked } = e.target;
-		setTaskList((prevData) => {
+		setItemList((prevData) => {
 			const newData = [...prevData];
 			newData[i][name] = type === "checkbox" ? checked : value;
-			// newData[i]["Task Type"] = value === "Extended" ? newData[i]["Number Of Activation"] = "1" : newData[i]["Number Of Activation"];
 			return newData;
 		});
 	};
-	const taskListRows = taskList.map((task, i) => {
+	const taskListRows = itemList.map((item, i) => {
 		return (
 			<tr key={i}>
-				{Object.keys(taskListSchema).map((key) => (
-					<td key={key}>
-						<MultiTypeInput
-							key={key}
-							keyName={key}
-							parent={taskListSchema}
-							data={task}
-							onChangeHandler={(e) => handleDynamicInputChange(e, i)}
-							showLabel={false}
-						/>
-					</td>
-				))}
+				{Object.keys(itemListSchema).map((key) => {
+					let disabled = false;
+					if (item["Task Type"] !== undefined) {
+						disabled =
+							item["Task Type"] === "Extended" &&
+							key === "Number Of Activation";
+						if (disabled) {
+							item["Number Of Activation"] = "1";
+						}
+					}
+					return (
+						<td key={key}>
+							<MultiTypeInput
+								key={key}
+								keyName={key}
+								parent={itemListSchema}
+								data={item}
+								onChangeHandler={(e) => handleDynamicInputChange(e, i)}
+								showLabel={false}
+								disabled={disabled}
+							/>
+						</td>
+					);
+				})}
 			</tr>
 		);
 	});
@@ -39,17 +56,18 @@ const Table = ({ taskList, setJsonData, setTaskList }) => {
 			<table className="dark-mode-table">
 				<thead>
 					<tr>
-						{Object.keys(taskListSchema).map((key) => (
+						{Object.keys(itemListDefault).map((key) => (
 							<th key={key}>{key}</th>
 						))}
 					</tr>
 				</thead>
 				<tbody>{taskListRows}</tbody>
 			</table>
+
 			<TableActions
-				setJsonData={setJsonData}
-				setTaskList={setTaskList}
-				taskList={taskList}
+				onClearHandler={onClearHandler}
+				onAddHandler={onAddHandler}
+				tableName={tableName}
 			/>
 		</div>
 	);

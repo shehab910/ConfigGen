@@ -8,8 +8,10 @@ const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
  * @param {object} task - The task object.
  * @returns {number} - The number of activations.
  */
-const getNumberOfActivation = (task) => 
-	task["Number Of Activation"] === "0" ? 1 : Number(task["Number Of Activation"]);
+const getNumberOfActivation = (task) =>
+	task["Number Of Activation"] === "0"
+		? 1
+		: Number(task["Number Of Activation"]);
 
 /**
  * Gets the list of each priority level size (number of each task * number of activations).
@@ -61,33 +63,37 @@ const getConformancesClass = (taskList) => {
 			return CC;
 		}
 	}
-	CC += "1_CLASS" ;
+	CC += "1_CLASS";
 	return CC;
 };
 
-const getTaskInfoText = (task,taskList) => {
-return`
+const getTaskInfoText = (task, taskList) => {
+	return `
 	{
 		.TaskStaticPriority = ${task["Priority"]},
 		.TaskID = ${task["Task-ID"]},
 		.ApplicationMode = ${task["Application Mode"]},
 		.NumOfActivationRequests = ${getNumberOfActivation(task)},
-		.PriorityQueueIndex = ${getPriorityLevelsSorted(taskList).indexOf(Number(task["Priority"]))},
-		.TaskFlags = &Task${taskList.indexOf(task)+1}Flags,
-		.TaskStack = &Task${taskList.indexOf(task)+1}Stack,
+		.PriorityQueueIndex = ${getPriorityLevelsSorted(taskList).indexOf(
+			Number(task["Priority"])
+		)},
+		.TaskFlags = &Task${taskList.indexOf(task) + 1}Flags,
+		.TaskStack = &Task${taskList.indexOf(task) + 1}Stack,
 		.EntryPoint = ${task["Entry Point"]},
 		.InternalResource ,
-		.TaskDynamics = &Task${taskList.indexOf(task)+1}Dynamic
+		.TaskDynamics = &Task${taskList.indexOf(task) + 1}Dynamic
 	}`.trim();
 };
 
 const getTaskListInfoText = (taskList) => {
-	return taskList.map((task) => getTaskInfoText(task,taskList)).join(",\n\t");
-}
+	return taskList.map((task) => getTaskInfoText(task, taskList)).join(",\n\t");
+};
 
 const getTaskSchedulingPolicy = (task) => {
-	return task["Preemptive Mode"] === "Full Preemptive" ? "FULL_PREEMPTIVE_SCHEDULING" : "NON_PREEMPTIVE_SCHEDULING";
-}
+	return task["Preemptive Mode"] === "Full Preemptive"
+		? "FULL_PREEMPTIVE_SCHEDULING"
+		: "NON_PREEMPTIVE_SCHEDULING";
+};
 
 const getTaskFlagsText = (task) => {
 	return `
@@ -98,22 +104,27 @@ const getTaskFlagsText = (task) => {
 };
 
 const getTaskListFlagsText = (taskList) => {
-	return taskList.map((task,i) => `TaskFlagsType Task${i+1}Flags =\n${getTaskFlagsText(task)};`.trim()).join("\n");
+	return taskList
+		.map((task, i) =>
+			`TaskFlagsType Task${i + 1}Flags =\n${getTaskFlagsText(task)};`.trim()
+		)
+		.join("\n");
+};
 
-}
+const getTaskCurrentPriority = (task, taskList) => {
+	return task["Preemptive Mode"] === "Full Preemptive"
+		? task["Priority"]
+		: getPriorityLevelsSorted(taskList)[0];
+};
 
-const getTaskCurrentPriority = (task,taskList) => {
-	return task["Preemptive Mode"] === "Full Preemptive" ? task["Priority"] : getPriorityLevelsSorted(taskList)[0];
-}
-
-const getTaskDynamicText = (task,taskList) => {
+const getTaskDynamicText = (task, taskList) => {
 	return `
 {
 	.Context = NULL_PTR,
 	.Resources = NULL_PTR,
 	.EventsPending = 0,
 	.EventsWaiting = 0,
-	.TaskCurrentPriority = ${getTaskCurrentPriority(task,taskList)},
+	.TaskCurrentPriority = ${getTaskCurrentPriority(task, taskList)},
 	.TaskState = SUSPENDED,
 	.PendingActivationRequests = 0,
 	.TaskIsPreempted = FALSE	
@@ -121,8 +132,16 @@ const getTaskDynamicText = (task,taskList) => {
 };
 
 const getTaskListDynamicText = (taskList) => {
-	return taskList.map((task,i) => `TaskDynamicType Task${i+1}Dynamic =\n${getTaskDynamicText(task,taskList)};`.trim()).join("\n");
-}
+	if (taskList.length === 0) return "";
+	return taskList
+		.map((task, i) =>
+			`TaskDynamicType Task${i + 1}Dynamic =\n${getTaskDynamicText(
+				task,
+				taskList
+			)};`.trim()
+		)
+		.join("\n");
+};
 
 // TaskStackType TaskStack =
 // {
@@ -135,32 +154,44 @@ const getTaskStackText = (task) => {
 	.StackBase = NULL_PTR,
 	.StackSize = ${task["Stack Size"]}
 }`.trim();
-}
+};
 const getTaskListStackText = (taskList) => {
-	return taskList.map((task,i) => `TaskStackType Task${i+1}Stack =\n${getTaskStackText(task)};`.trim()).join("\n");
-}
-
-export const generateHFile = (taskList, jsonData) => {
-	return getHFileText(
-		taskList.length,
-		getPriorityLevelsSorted(taskList).length,
-		getSTD_ON_OFF(jsonData.StartupHook),
-		getSTD_ON_OFF(jsonData.ShutdownHook),
-		getSTD_ON_OFF(jsonData.PreTaskHook),
-		getSTD_ON_OFF(jsonData.PostTaskHook),
-		getSTD_ON_OFF(jsonData.ErrorHook),
-		jsonData["Error Checking Type"],
-		getConformancesClass(taskList)
-	);
+	return taskList
+		.map((task, i) =>
+			`TaskStackType Task${i + 1}Stack =\n${getTaskStackText(task)};`.trim()
+		)
+		.join("\n");
 };
 
-export const generateCFile = (taskList) => {
-	return getCFileText(
-		getPriorityLevelsSorted(taskList),
-		getPriorityLevelsSize(taskList),
-		taskList
+const getIRCelingPriority = (IR, taskList) => {
+	//filter all tasks that use this IR
+	const filteredTasks = taskList.filter(
+		(task) => task["Internal Resource"] === IR["Resource Name"]
 	);
-}
+	console.log(filteredTasks);
+	//get the highest priority of these tasks
+	const highestPriority = Math.max(
+		...filteredTasks.map((task) => {
+			// console.log(task["Priority"], Number(task["Priority"]));
+			return Number(task["Priority"]);
+		})
+	);
+	return highestPriority;
+};
+
+const getIRText = (IR, IRIndex, taskList) => {
+	return `
+	Os_InteranlResource ${IR["Resource Name"].replace(" ", "")} =
+	{
+		.CeilingPriority = ${getIRCelingPriority(IR, taskList)},
+		.InternalResourceDynamics = &InernalResourceDynamic${IRIndex + 1}
+	};
+	`.trim();
+};
+
+const getIRListText = (IRList, taskList) => {
+	return IRList.map((IR, i) => getIRText(IR, i, taskList)).join("\n");
+};
 
 /**
  * Generates an H file with specified parameters.
@@ -176,7 +207,7 @@ export const generateCFile = (taskList) => {
  * @param {string} ConformanceClass - The Conformance Class.
  * @returns {string} - The generated H file.
  */
-export const getHFileText = (
+const getHFileText = (
 	number_of_tasks,
 	priority_levels,
 	StartupHook,
@@ -192,10 +223,14 @@ export const getHFileText = (
 /*                                  MACROS                                         */
 /***********************************************************************************/
 /* total number of tasks created by the user */
-#define TASK_COUNT                                      ${toUhexFormat(number_of_tasks)}
+#define TASK_COUNT                                      ${toUhexFormat(
+		number_of_tasks
+	)}
 
 /* number of priority levels assigned by the user */
-#define PRIORITY_LEVELS                                 ${toUhexFormat(priority_levels)}
+#define PRIORITY_LEVELS                                 ${toUhexFormat(
+		priority_levels
+	)}
 
 #define PRE_TASK_HOOK                                   ${PreTaskHook}   
 					
@@ -213,24 +248,28 @@ export const getHFileText = (
 #define CONFORMANCE_CLASS                               ${ConformanceClass} 
 `.trim();
 
-
 // Return a string containing the C macros defined in the JSON file.
-export const getCFileText = (
-	priority_list, 
+const getCFileText = (
+	priority_list,
 	PriorityLevelsSize,
-	taskList
-) => 
+	taskList,
+	internalResourceList
+) =>
 	`
 /***********************************************************************************/
 /*				    			External constants		         				   */
 /***********************************************************************************/
 uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
 
-TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(PriorityLevelsSize)};
+TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
+		PriorityLevelsSize
+	)};
 
 ${getTaskListFlagsText(taskList)}
 
 ${getTaskListStackText(taskList)}
+
+${getIRListText(internalResourceList, taskList)}
 
 ${getTaskListDynamicText(taskList)}
 
@@ -241,3 +280,25 @@ OS_Task Tasks[TASK_COUNT] =
 
 `.trim();
 
+export const generateHFile = (taskList, jsonData) => {
+	return getHFileText(
+		taskList.length,
+		getPriorityLevelsSorted(taskList).length,
+		getSTD_ON_OFF(jsonData.StartupHook),
+		getSTD_ON_OFF(jsonData.ShutdownHook),
+		getSTD_ON_OFF(jsonData.PreTaskHook),
+		getSTD_ON_OFF(jsonData.PostTaskHook),
+		getSTD_ON_OFF(jsonData.ErrorHook),
+		jsonData["Error Checking Type"],
+		getConformancesClass(taskList)
+	);
+};
+
+export const generateCFile = (taskList, internalResourceList) => {
+	return getCFileText(
+		getPriorityLevelsSorted(taskList),
+		getPriorityLevelsSize(taskList),
+		taskList,
+		internalResourceList
+	);
+};
