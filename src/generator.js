@@ -80,7 +80,7 @@ const getTaskInfoText = (task, taskList) => {
 		.TaskFlags = &Task${taskList.indexOf(task) + 1}Flags,
 		.TaskStack = &Task${taskList.indexOf(task) + 1}Stack,
 		.EntryPoint = ${task["Entry Point"]},
-		.InternalResource = &${task["Internal Resource"].replace(" ", "")}
+		.InternalResource = ${task["Internal Resource"] ? "&"+task["Internal Resource"].replace(" ", "") : "NULL_PTR"},
 		.TaskDynamics = &Task${taskList.indexOf(task) + 1}Dynamic
 	}`.trim();
 };
