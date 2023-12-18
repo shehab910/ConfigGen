@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import Table from "../Table";
+import Table from "./Table";
 import { getTasksDefaults } from "../utils";
 
 const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {

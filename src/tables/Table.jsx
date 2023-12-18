@@ -1,5 +1,7 @@
-import MultiTypeInput from "./MultiTypeInput";
+import MultiTypeInput from "../MultiTypeInput";
 import TableActions from "./TableActions";
+
+import styles from "./table.module.css";
 
 /* eslint-disable react/prop-types */
 
@@ -45,8 +47,8 @@ const Table = ({
 	});
 
 	return (
-		<div>
-			<table className="dark-mode-table">
+		<div className="table_container">
+			<table className={styles["dark-mode-table"]}>
 				<thead>
 					<tr>
 						{Object.keys(itemListDefault).map((key) => (
@@ -56,7 +58,6 @@ const Table = ({
 				</thead>
 				<tbody>{taskListRows}</tbody>
 			</table>
-
 			<TableActions
 				onClearHandler={onClearHandler}
 				onAddHandler={onAddHandler}

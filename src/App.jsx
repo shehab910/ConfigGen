@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import MultiTypeInput from "./MultiTypeInput";
-// import Table from "./Table";
 import { generateCFile, generateHFile } from "./generator";
 import { getTasksDefaults } from "./utils";
 
@@ -75,15 +74,23 @@ const App = () => {
 	};
 
 	const renderStaticInputs = () => {
-		return Object.keys(staticJsonData).map((key) => (
-			<MultiTypeInput
-				key={key}
-				keyName={key}
-				parent={staticJsonData}
-				data={jsonData}
-				onChangeHandler={handleStaticInputChange}
-			/>
-		));
+		const staticJsonDataKeys = Object.keys(staticJsonData);
+		return (
+			<div className="static_component_container">
+				{staticJsonDataKeys.map((key, i) => (
+					<>
+						<MultiTypeInput
+							key={key}
+							keyName={key}
+							parent={staticJsonData}
+							data={jsonData}
+							onChangeHandler={handleStaticInputChange}
+						/>
+						{i !== staticJsonDataKeys.length - 1 && <hr />}
+					</>
+				))}
+			</div>
+		);
 	};
 
 	const generateFilesHandler = () => {
@@ -99,20 +106,21 @@ const App = () => {
 
 	return (
 		<div className="root">
-			<nav className="mynavbar">
-				<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
-			</nav>
+			<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
 			{renderStaticInputs()}
+			<hr />
 			<InternalResourceTable
 				internalResourceList={internalResourceList}
 				setInternalResourceList={setInternalResourceList}
 			/>
+			<hr />
 			<TaskTable
 				setTaskList={setTaskList}
 				taskList={taskList}
 				taskListSchema={taskListSchema}
 			/>
-			<button className="button" onClick={generateFilesHandler}>
+			<hr />
+			<button className="button btn-green" onClick={generateFilesHandler}>
 				Generate Files
 			</button>
 			<h2>Entered JSON Information</h2>

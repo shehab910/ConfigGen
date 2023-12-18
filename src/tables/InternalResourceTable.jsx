@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import Table from "../Table";
+import Table from "./Table";
 import { getInternalResourceDefaults } from "../utils";
 import dynamicJsonData from "../OS_dynamic_props.json";
 
@@ -32,7 +32,7 @@ const InternalResourceTable = ({
 	};
 	return (
 		<Table
-			tableName={"Internal Resource"}
+			tableName={"Resource"}
 			itemList={internalResourceList}
 			setItemList={setInternalResourceList}
 			onAddHandler={onAddHandler}

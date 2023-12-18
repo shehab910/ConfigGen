@@ -9,39 +9,38 @@ const MultiTypeInput = ({
 }) => {
 	return (
 		<div>
-			<label>
-				{showLabel && keyName}
-				{Array.isArray(parent[keyName]) && (
-					<select className="myComboBox"
-						name={keyName}
-						value={data[keyName]}
-						onChange={onChangeHandler}
-						disabled={disabled}
-					>
-						<option disabled value="">
-							Select {keyName}
+			<label>{showLabel && keyName}</label>
+			{Array.isArray(parent[keyName]) && (
+				<select
+					name={keyName}
+					value={data[keyName]}
+					onChange={onChangeHandler}
+					disabled={disabled}
+				>
+					<option disabled value="">
+						Select {keyName}
+					</option>
+					{parent[keyName].map((item, index) => (
+						<option key={index} value={item}>
+							{item}
 						</option>
-						{parent[keyName].map((item, index) => (
-							<option key={index} value={item}>
-								{item}
-							</option>
-						))}
-					</select>
-				)}
+					))}
+				</select>
+			)}
 
-				{!Array.isArray(parent[keyName]) && (
-					<input className="myinput"
-						type={typeof parent[keyName] === "boolean" ? "checkbox" : "text"}
-						name={keyName}
-						value={data[keyName] === undefined ? "" : data[keyName]}
-						checked={
-							typeof data[keyName] === "boolean" ? data[keyName] : undefined
-						}
-						onChange={onChangeHandler}
-						disabled={disabled}
-					/>
-				)}
-			</label>
+			{!Array.isArray(parent[keyName]) && (
+				<input
+					className="myinput"
+					type={typeof parent[keyName] === "boolean" ? "checkbox" : "text"}
+					name={keyName}
+					value={data[keyName] === undefined ? "" : data[keyName]}
+					checked={
+						typeof data[keyName] === "boolean" ? data[keyName] : undefined
+					}
+					onChange={onChangeHandler}
+					disabled={disabled}
+				/>
+			)}
 		</div>
 	);
 };

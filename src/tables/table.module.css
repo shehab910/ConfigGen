@@ -1,0 +1,28 @@
+.dark-mode-table {
+	border-collapse: collapse;
+	margin-top: 40px;
+	overflow-y: scroll;
+	max-width: 100%;
+}
+
+.dark-mode-table th,
+.dark-mode-table td {
+	border: 1px solid #444; /* Dark border color */
+	padding: 12px;
+	text-align: center;
+	height: auto;
+}
+
+.dark-mode-table th {
+	background-color: #333; /* Dark header background color */
+	color: #fff; /* Light header text color */
+	min-width: auto;
+}
+
+.dark-mode-table tbody tr:nth-child(even) {
+	background-color: #333; /* Dark alternate row background color */
+}
+
+.dark-mode-table tbody tr:nth-child(odd) {
+	background-color: #222; /* Dark alternate row background color */
+}
