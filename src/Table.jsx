@@ -33,6 +33,11 @@ const Table = ({
 							item["Number Of Activation"] = "1";
 						}
 					}
+					if(key === "Task-ID" || key === "Resource-ID")
+					{
+						disabled = true;
+					}
+
 					return (
 						<td key={key}>
 							<MultiTypeInput

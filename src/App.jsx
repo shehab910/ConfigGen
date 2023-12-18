@@ -96,10 +96,5 @@ export default App;
 /*
 
 ==> download Cfg files in specific folder
-
-
-==> in cfg.c file, add internalREsourceDynamic for each internalResource (see OS_cfg.c sayed file)
-		default parameters 
-
-==> 
+ 
 */

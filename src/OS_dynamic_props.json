@@ -5,7 +5,7 @@
 		"Stack Size": 512,
 		"AutoStart": false,
 		"Priority": "0",
-		"Number Of Activation": "0",
+		"Number Of Activation": "1",
 		"Internal Resource": [],
 		"Preemptive Mode": ["Full Preemptive", "Non Preemptive"],
 		"Task Type": ["Basic", "Extended"],
