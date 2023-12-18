@@ -130,6 +130,7 @@ body {
 
 .myinput {
 	width: 100%;
+	
 }
 
 .myinput[type="checkbox"] {
@@ -160,14 +161,27 @@ body {
 
 .static_component_container div input {
 	width: max-content;
+	
 }
 
 .static_component_container div input[type="checkbox"] {
 	height: 1rem;
 	margin-bottom: 0;
+	cursor: pointer;
 }
 
 .static_component_container div select {
 	width: max-content;
 	font-size: 1rem;
+	cursor: pointer;
+}
+
+.table_container input[type="checkbox" ]{
+	cursor: pointer;
+}
+
+.table_container select {
+	width: max-content;
+	font-size: 0.87rem;
+	cursor: pointer;
 }
