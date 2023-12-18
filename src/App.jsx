@@ -11,11 +11,37 @@ import "./App.css";
 import TaskTable from "./tables/TaskTable";
 import InternalResourceTable from "./tables/InternalResourceTable";
 import dynamicJsonData from "./OS_dynamic_props.json";
+import JSZip from "jszip";
 
-const createAndDownloadFile = (fileName, fileContent) => {
+// const createAndDownloadFile = (fileName, fileContent) => {
+// 	const element = document.createElement("a");
+// 	const file = new Blob([fileContent], { type: "text/plain" });
+// 	element.href = URL.createObjectURL(file);
+// 	element.download = fileName;
+// 	document.body.appendChild(element); // Required for this to work in FireFox
+// 	element.click();
+// };
+
+/**
+ *
+ * @param {[{name: string, content: string}]} files
+ */
+const zipFilesAndDownload = (files) => {
+	const zip = new JSZip();
+	const folder = zip.folder("Config Files");
+	files.forEach((file) => {
+		folder.file(file.name, file.content);
+	});
+	zip.generateAsync({ type: "blob" }).then((content) => {
+		const date = new Date();
+		const formattedDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${date.getHours()}.${date.getMinutes()}`;
+		saveAs(content, `config_${formattedDate}.zip`);
+	});
+};
+
+const saveAs = (blob, fileName) => {
 	const element = document.createElement("a");
-	const file = new Blob([fileContent], { type: "text/plain" });
-	element.href = URL.createObjectURL(file);
+	element.href = URL.createObjectURL(blob);
 	element.download = fileName;
 	document.body.appendChild(element); // Required for this to work in FireFox
 	element.click();
@@ -62,13 +88,17 @@ const App = () => {
 
 	const generateFilesHandler = () => {
 		const hCode = generateHFile(taskList, jsonData);
-		createAndDownloadFile("OS_Cfg.h", hCode);
+		// createAndDownloadFile("OS_Cfg.h", hCode);
 		const cCode = generateCFile(taskList, internalResourceList);
-		createAndDownloadFile("OS_Cfg.c", cCode);
+		// createAndDownloadFile("OS_Cfg.c", cCode);
+		zipFilesAndDownload([
+			{ name: "OS_Cfg.h", content: hCode },
+			{ name: "OS_Cfg.c", content: cCode },
+		]);
 	};
 
 	return (
-		<div className="root" >
+		<div className="root">
 			<nav className="mynavbar">
 				<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
 			</nav>
@@ -82,7 +112,9 @@ const App = () => {
 				taskList={taskList}
 				taskListSchema={taskListSchema}
 			/>
-			<button className="button" onClick={generateFilesHandler}>Generate Files</button>
+			<button className="button" onClick={generateFilesHandler}>
+				Generate Files
+			</button>
 			<h2>Entered JSON Information</h2>
 			<pre>{JSON.stringify(jsonData, null, 2)}</pre>
 			<pre>{JSON.stringify(taskList, null, 2)}</pre>
