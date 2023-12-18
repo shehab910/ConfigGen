@@ -13,10 +13,10 @@ const InternalResourceTable = ({
 	const onAddHandler = () => {
 		const newTask = getInternalResourceDefaults();
 		if (internalResourceList.length > 0) {
-			newTask["Resource-ID"] =
-				+internalResourceList[internalResourceList.length - 1]["Resource-ID"] +
+			newTask["Internal Resource-ID"] =
+				+internalResourceList[internalResourceList.length - 1]["Internal Resource-ID"] +
 				1;
-			newTask["Resource Name"] = "InternalResource " + newTask["Resource-ID"];
+			// newTask["Internal Resource Name"] = "InternalResource " + newTask["Internal Resource-ID"];
 		}
 		setInternalResourceList((prevData) => [...prevData, newTask]);
 	};
@@ -25,14 +25,14 @@ const InternalResourceTable = ({
 	};
 	const checkIfDisabled = (_, key) => {
 		let disabled = false;
-		if (key === "Resource-ID") {
+		if (key === "Internal Resource-ID") {
 			disabled = true;
 		}
 		return disabled;
 	};
 	return (
 		<Table
-			tableName={"Resource"}
+			tableName={"Internal Resource"}
 			itemList={internalResourceList}
 			setItemList={setInternalResourceList}
 			onAddHandler={onAddHandler}

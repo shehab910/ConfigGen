@@ -1,7 +1,7 @@
 {
 	"TaskList": {
 		"Task-ID": 0,
-		"Entry Point": "",
+		"Task Name": "",
 		"Stack Size": 512,
 		"AutoStart": false,
 		"Priority": "0",
@@ -12,10 +12,13 @@
 		"Application Mode": ""
 	},
 	"InternalResource": {
-		"Resource-ID": 0,
-		"Resource Name": "InternalResource 0"
+		"Internal Resource-ID": 0,
+		"Internal Resource Name": ""
 	},
-	"ResourceList": [],
+	"ResourceList": {
+		"Resource-ID": 0,
+		"Resource Name": ""
+	},
 	"CounterList": [],
 	"AlarmList": []
 }

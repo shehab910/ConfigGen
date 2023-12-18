@@ -14,3 +14,5 @@ export const getTasksDefaults = () =>
 	getItemsDefaults(dynamicJsonData.TaskList);
 export const getInternalResourceDefaults = () =>
 	getItemsDefaults(dynamicJsonData.InternalResource);
+export const getResourceDefaults = () =>
+	getItemsDefaults(dynamicJsonData.ResourceList);

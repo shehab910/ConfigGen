@@ -1,4 +1,11 @@
-const toUhexFormat = (x) => `(0x${x.toString(16).toUpperCase()}U)`;
+const toUhexFormat = (x) => `(0x${toUhexOnenumberFormat(x.toString(16))+x.toString(16).toUpperCase()}U)`;
+
+const toUhexOnenumberFormat = (x) => {
+
+	if(x.length === 1)
+		return `0`;
+	return ``;
+};
 
 const listToCurlyBraces = (x) => `{${x.map(String).join(", ")}}`;
 
@@ -67,6 +74,16 @@ const getConformancesClass = (taskList) => {
 	return CC;
 };
 
+const getMaxNoTasksAutoStart = (taskList) => {
+	let ret = 0;
+	taskList.forEach((task) => {
+		if(task["AutoStart"]) {
+			ret += 1;
+		}
+	});
+	return ret;
+}
+
 const getTaskInfoText = (task, taskList) => {
 	return `
 	{
@@ -79,7 +96,7 @@ const getTaskInfoText = (task, taskList) => {
 		)},
 		.TaskFlags = &Task${taskList.indexOf(task) + 1}Flags,
 		.TaskStack = &Task${taskList.indexOf(task) + 1}Stack,
-		.EntryPoint = ${task["Entry Point"]},
+		.EntryPoint = ${task["Task Name"]},
 		.InternalResource = ${task["Internal Resource"] ? "&"+task["Internal Resource"].replace(" ", "") : "NULL_PTR"},
 		.TaskDynamics = &Task${taskList.indexOf(task) + 1}Dynamic
 	}`.trim();
@@ -87,6 +104,39 @@ const getTaskInfoText = (task, taskList) => {
 
 const getTaskListInfoText = (taskList) => {
 	return taskList.map((task) => getTaskInfoText(task, taskList)).join(",\n\t");
+};
+
+//EntryPoint
+const getTaskEPText = (task) => {
+	return`
+		extern void ${task["Task Name"]} (void);
+	`.trim();
+};
+
+const getTaskListEPText = (taskList) => {
+	return taskList.map((task) => getTaskEPText(task)).join("\n");
+};
+
+const getAutoStartTasksText = (taskList) => {
+	return`
+uint8 AutoStartTasks [${getMaxNoTasksAutoStart(taskList)}] = {
+${getAutoStartTasksArrayValues(taskList)}
+}
+`.trim();
+};
+
+const getAutoStartTasksArrayValues =(taskList) => {
+	let ret = "";
+	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
+	for(let i = 0; i < priorityLevelsSorted.length; i++) {
+		taskList.forEach((task) => {
+			if(Number(task["Priority"]) === priorityLevelsSorted[i] && task["AutoStart"] === true){
+				ret += "\t"+task["Task-ID"]+",\n";
+			}
+		});
+	}
+	ret = ret.slice(0,-2);
+	return `${ret}`;
 };
 
 const getTaskSchedulingPolicy = (task) => {
@@ -162,7 +212,7 @@ const getTaskListStackText = (taskList) => {
 const getIRCelingPriority = (IR, taskList) => {
 	//filter all tasks that use this IR
 	const filteredTasks = taskList.filter(
-		(task) => task["Internal Resource"] === IR["Resource Name"]
+		(task) => task["Internal Resource"] === IR["Internal Resource Name"]
 	);
 	//get the highest priority of these tasks
 	const highestPriority = Math.max(
@@ -175,7 +225,7 @@ const getIRCelingPriority = (IR, taskList) => {
 
 const getIRText = (IR, IRIndex, taskList) => {
 	return `
-	Os_InteranlResource ${IR["Resource Name"].replace(" ", "")} =
+	Os_InteranlResource ${IR["Internal Resource Name"].replace(" ", "")} =
 {
 	.CeilingPriority = ${getIRCelingPriority(IR, taskList)},
 	.InternalResourceDynamics = &InernalResourceDynamic${IRIndex + 1}
@@ -187,9 +237,9 @@ const getIRListText = (IRList, taskList) => {
 	return IRList.map((IR, i) => getIRText(IR, i, taskList)).join("\n");
 };
 
-const getIRDynamicText = (IRIndex) => {
+const getIRDynamicText = (IR) => {
 	return `
-	Os_InernalResourceDynamic InternalResourceDynamic${IRIndex+1}
+	Os_InernalResourceDynamic ${IR["Internal Resource Name"].replace(" ", "")}Dynamic
 {
 	.TakenTaskPriority = 0,
 	.TakenFlag = FALSE
@@ -198,8 +248,9 @@ const getIRDynamicText = (IRIndex) => {
 }
 
 const getIRDynamicListText = (IRList) => {
-	return IRList.map((IR, i) => getIRDynamicText(i)).join("\n");
+	return IRList.map((IR) => getIRDynamicText(IR)).join("\n");
 }
+
 
 
 
@@ -228,7 +279,8 @@ const getHFileText = (
 	PostTaskHook,
 	ErrorHook,
 	ErrorCheckingType,
-	ConformanceClass
+	ConformanceClass,
+	taskList
 ) =>
 	`
 /***********************************************************************************/
@@ -258,6 +310,8 @@ const getHFileText = (
 
 /* system conformance class */
 #define CONFORMANCE_CLASS                               ${ConformanceClass} 
+
+#define MAX_NO_TASKS_AUTOSTART							${toUhexFormat(getMaxNoTasksAutoStart(taskList))}
 `.trim();
 
 // Return a string containing the C macros defined in the JSON file.
@@ -277,6 +331,8 @@ TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
 		PriorityLevelsSize
 	)};
 
+${getTaskListEPText(taskList)}
+
 ${getTaskListFlagsText(taskList)}
 
 ${getTaskListStackText(taskList)}
@@ -292,6 +348,8 @@ OS_Task Tasks[TASK_COUNT] =
 	${getTaskListInfoText(taskList)}
 }
 
+${getAutoStartTasksText(taskList)}
+
 `.trim();
 
 export const generateHFile = (taskList, jsonData) => {
@@ -304,7 +362,8 @@ export const generateHFile = (taskList, jsonData) => {
 		getSTD_ON_OFF(jsonData.PostTaskHook),
 		getSTD_ON_OFF(jsonData.ErrorHook),
 		jsonData["Error Checking Type"],
-		getConformancesClass(taskList)
+		getConformancesClass(taskList),
+		taskList
 	);
 };
 

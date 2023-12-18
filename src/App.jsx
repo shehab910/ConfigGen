@@ -9,6 +9,7 @@ import defaultJsonData from "./OS_default.json";
 import "./App.css";
 import TaskTable from "./tables/TaskTable";
 import InternalResourceTable from "./tables/InternalResourceTable";
+import ResourceTable from "./tables/ResourceTable";
 import dynamicJsonData from "./OS_dynamic_props.json";
 import JSZip from "jszip";
 
@@ -54,12 +55,13 @@ const App = () => {
 		dynamicJsonData.TaskList
 	);
 	const [internalResourceList, setInternalResourceList] = useState([]);
+	const [ResourceList, setResourceList] = useState([]);
 
 	useEffect(() => {
 		setTaskListSchema((prevData) => {
 			const newData = { ...prevData };
 			newData["Internal Resource"] = internalResourceList.map(
-				(item) => item["Resource Name"]
+				(item) => item["Internal Resource Name"]
 			);
 			return newData;
 		});
@@ -118,6 +120,11 @@ const App = () => {
 				setTaskList={setTaskList}
 				taskList={taskList}
 				taskListSchema={taskListSchema}
+			/>
+			<hr />
+			<ResourceTable
+				ResourceList={ResourceList}
+				setResourceList={setResourceList}	
 			/>
 			<hr />
 			<button className="button btn-green" onClick={generateFilesHandler}>
