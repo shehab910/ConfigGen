@@ -23,6 +23,13 @@ const InternalResourceTable = ({
 	const clearHandler = () => {
 		setInternalResourceList([]);
 	};
+	const checkIfDisabled = (_, key) => {
+		let disabled = false;
+		if (key === "Resource-ID") {
+			disabled = true;
+		}
+		return disabled;
+	};
 	return (
 		<Table
 			tableName={"Internal Resource"}
@@ -32,6 +39,7 @@ const InternalResourceTable = ({
 			itemListSchema={IRListSchema}
 			itemListDefault={getInternalResourceDefaults()}
 			onClearHandler={clearHandler}
+			checkIfDisabled={checkIfDisabled}
 		/>
 	);
 };

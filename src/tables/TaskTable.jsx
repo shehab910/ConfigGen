@@ -11,6 +11,20 @@ const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {
 	const clearHandler = () => {
 		setTaskList([getTasksDefaults()]);
 	};
+	const checkIfDisabled = (item, key) => {
+		let disabled = false;
+		if (item["Task Type"] !== undefined) {
+			disabled =
+				item["Task Type"] === "Extended" && key === "Number Of Activation";
+			if (disabled) {
+				item["Number Of Activation"] = "1";
+			}
+		}
+		if (key === "Task-ID") {
+			disabled = true;
+		}
+		return disabled;
+	};
 	return (
 		<Table
 			tableName={"Task"}
@@ -20,6 +34,7 @@ const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {
 			itemListSchema={taskListSchema}
 			itemListDefault={getTasksDefaults()}
 			onClearHandler={clearHandler}
+			checkIfDisabled={checkIfDisabled}
 		/>
 	);
 };

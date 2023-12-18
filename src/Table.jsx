@@ -11,6 +11,7 @@ const Table = ({
 	itemListSchema,
 	tableName,
 	onClearHandler,
+	checkIfDisabled,
 }) => {
 	const handleDynamicInputChange = (e, i) => {
 		const { name, value, type, checked } = e.target;
@@ -24,20 +25,7 @@ const Table = ({
 		return (
 			<tr key={i}>
 				{Object.keys(itemListSchema).map((key) => {
-					let disabled = false;
-					if (item["Task Type"] !== undefined) {
-						disabled =
-							item["Task Type"] === "Extended" &&
-							key === "Number Of Activation";
-						if (disabled) {
-							item["Number Of Activation"] = "1";
-						}
-					}
-					if(key === "Task-ID" || key === "Resource-ID")
-					{
-						disabled = true;
-					}
-
+					let disabled = checkIfDisabled(item, key);
 					return (
 						<td key={key}>
 							<MultiTypeInput
