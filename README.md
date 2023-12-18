@@ -1,6 +1,7 @@
 # Descritpion
 
 Web App that allows you to modify certain properties of OS configuration files & generate the nescessary files.
+Check the live version [here](https://config-gen.vercel.app/)!
 
 # How To Run
 
