@@ -7,10 +7,9 @@ const MultiTypeInput = ({
 	showLabel = true,
 	disabled = false,
 }) => {
-	return (
-		<div>
-			<label>{showLabel && keyName}</label>
-			{Array.isArray(parent[keyName]) && (
+	const getInput = () => {
+		if (Array.isArray(parent[keyName])) {
+			return (
 				<select
 					name={keyName}
 					value={data[keyName]}
@@ -26,21 +25,24 @@ const MultiTypeInput = ({
 						</option>
 					))}
 				</select>
-			)}
-
-			{!Array.isArray(parent[keyName]) && (
-				<input
-					className="myinput"
-					type={typeof parent[keyName] === "boolean" ? "checkbox" : "text"}
-					name={keyName}
-					value={data[keyName] === undefined ? "" : data[keyName]}
-					checked={
-						typeof data[keyName] === "boolean" ? data[keyName] : undefined
-					}
-					onChange={onChangeHandler}
-					disabled={disabled}
-				/>
-			)}
+			);
+		}
+		return (
+			<input
+				className="myinput"
+				type={typeof parent[keyName] === "boolean" ? "checkbox" : "text"}
+				name={keyName}
+				value={data[keyName] === undefined ? "" : data[keyName]}
+				checked={typeof data[keyName] === "boolean" ? data[keyName] : undefined}
+				onChange={onChangeHandler}
+				disabled={disabled}
+			/>
+		);
+	};
+	return (
+		<div>
+			<label>{showLabel && keyName}</label>
+			{getInput()}
 		</div>
 	);
 };

@@ -4,6 +4,11 @@
 		"Task Name": "",
 		"Stack Size": 512,
 		"AutoStart": false,
+		"Resources": {
+			"type": "multi-select",
+			"options": [],
+			"value": []
+		},
 		"Priority": "0",
 		"Number Of Activation": "1",
 		"Internal Resource": [],
