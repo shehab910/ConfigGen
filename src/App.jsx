@@ -123,6 +123,11 @@ const App = () => {
 			<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
 			{renderStaticInputs()}
 			<hr />
+			<ResourceTable
+				ResourceList={ResourceList}
+				setResourceList={setResourceList}
+			/>
+			<hr />
 			<InternalResourceTable
 				internalResourceList={internalResourceList}
 				setInternalResourceList={setInternalResourceList}
@@ -132,11 +137,6 @@ const App = () => {
 				setTaskList={setTaskList}
 				taskList={taskList}
 				taskListSchema={taskListSchema}
-			/>
-			<hr />
-			<ResourceTable
-				ResourceList={ResourceList}
-				setResourceList={setResourceList}
 			/>
 			<hr />
 			<button className="button btn-green" onClick={generateFilesHandler}>
