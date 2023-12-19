@@ -13,11 +13,11 @@
 	},
 	"InternalResource": {
 		"Internal Resource-ID": 0,
-		"Internal Resource Name": ""
+		"Internal Resource Name": "InternalResource 0"
 	},
 	"ResourceList": {
 		"Resource-ID": 0,
-		"Resource Name": ""
+		"Resource Name": "Resource 0"
 	},
 	"CounterList": [],
 	"AlarmList": []

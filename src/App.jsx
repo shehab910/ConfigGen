@@ -151,6 +151,9 @@ const App = () => {
 
 export default App;
 
+// Today TODOs:
+// 1. Add Resource to Task Table
+
 /*TODO*/
 /*
 

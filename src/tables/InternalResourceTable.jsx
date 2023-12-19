@@ -14,9 +14,11 @@ const InternalResourceTable = ({
 		const newTask = getInternalResourceDefaults();
 		if (internalResourceList.length > 0) {
 			newTask["Internal Resource-ID"] =
-				+internalResourceList[internalResourceList.length - 1]["Internal Resource-ID"] +
-				1;
-			// newTask["Internal Resource Name"] = "InternalResource " + newTask["Internal Resource-ID"];
+				+internalResourceList[internalResourceList.length - 1][
+					"Internal Resource-ID"
+				] + 1;
+			newTask["Internal Resource Name"] =
+				"InternalResource " + newTask["Internal Resource-ID"];
 		}
 		setInternalResourceList((prevData) => [...prevData, newTask]);
 	};
