@@ -110,7 +110,7 @@ const App = () => {
 	const generateFilesHandler = () => {
 		const hCode = generateHFile(taskList, jsonData,ResourceList);
 		// createAndDownloadFile("OS_Cfg.h", hCode);
-		const cCode = generateCFile(taskList, internalResourceList);
+		const cCode = generateCFile(taskList, internalResourceList,ResourceList);
 		// createAndDownloadFile("OS_Cfg.c", cCode);
 		zipFilesAndDownload([
 			{ name: "OS_Cfg.h", content: hCode },
@@ -161,7 +161,5 @@ export default App;
 ==> a new coloumn in task table in which i can select multiple inputs of resource name
 
 ==> cfg.c : Resource array and Resource dynamic for each resource name
-
-==> cfg.h : #define RESOURCE_COUNT 
  
 */

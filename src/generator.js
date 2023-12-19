@@ -84,6 +84,24 @@ const getMaxNoTasksAutoStart = (taskList) => {
 	return ret;
 }
 
+const getPriorityLevelQueueText = (taskList) => {
+	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
+	let ret = "";
+	for (let i = 0; i < priorityLevelsSorted.length; i++) {
+		ret += "Os_Task* PriorityLevel" + priorityLevelsSorted[i] + "Queue[TASKS_PER_PRIORITY*MULTIPLE_ACTIVATIONS];\n"
+	}
+	return ret;
+}
+
+const getPointerArrayToQueuesText = (taskList) => {
+	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
+	let ret = "";
+	for (let i = 0; i < priorityLevelsSorted.length; i++) {
+		ret += "PriorityLevel" + priorityLevelsSorted[i] + "Queue,\n"
+	}
+	return ret.slice(0,-2);
+};
+
 const getTaskInfoText = (task, taskList) => {
 	return `
 	{
@@ -104,6 +122,32 @@ const getTaskInfoText = (task, taskList) => {
 
 const getTaskListInfoText = (taskList) => {
 	return taskList.map((task) => getTaskInfoText(task, taskList)).join(",\n\t");
+};
+
+const getResourceInfoText = (resource) => {
+	return `
+	{
+		.CeilingPriority = ,
+		.ResourceID = ${resource["Resource-ID"]},
+		.ResourceDynamics = &Resource${resource["Resource-ID"]}Dynamic
+	}`.trim();
+};
+
+const getResourceListInfoText = (resourceList) => {
+	return resourceList.map((resource) => getResourceInfoText(resource)).join(",\n\t");
+};
+
+const getResourceDynamicText = (resource) => {
+	return `
+	Os_ResourceDynamic Resource${resource["Resource-ID"]}Dynamic =
+{
+	.OwnerTaskPriority = 0,
+	.OwnerTaskID = 0,
+	.LinkedResource = NULL_PTR
+};`.trim();
+};
+const getResourceListDynamicText = (resourceList) => {
+	return resourceList.map((resource) => getResourceDynamicText(resource)).join("\n");
 };
 
 //EntryPoint
@@ -323,21 +367,35 @@ const getCFileText = (
 	priority_list,
 	PriorityLevelsSize,
 	taskList,
-	internalResourceList
+	internalResourceList,
+	ResourceList
 ) =>
 	`
 /***********************************************************************************/
 /*				    			External constants		         				   */
 /***********************************************************************************/
-uint8 PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
+TaskPriorityType PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
 
 TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
 		PriorityLevelsSize
 	)};
 
+${getPriorityLevelQueueText(taskList)}
+
+Os_Task** PointerArrayToQueues [PRIORITY_LEVELS] = {
+${getPointerArrayToQueuesText(taskList)}
+};
+
 ${getTaskListEPText(taskList)}
 
 ${getTaskListFlagsText(taskList)}
+
+${getResourceListDynamicText(ResourceList)}
+
+Os_Resource Resources[RESOURCE_COUNT] = 
+{
+	${getResourceListInfoText(ResourceList)}
+};
 
 ${getTaskListStackText(taskList)}
 
@@ -350,7 +408,7 @@ ${getTaskListDynamicText(taskList)}
 OS_Task Tasks[TASK_COUNT] =
 {
 	${getTaskListInfoText(taskList)}
-}
+};
 
 ${getAutoStartTasksText(taskList)}
 
@@ -372,11 +430,12 @@ export const generateHFile = (taskList, jsonData,ResourceList) => {
 	);
 };
 
-export const generateCFile = (taskList, internalResourceList) => {
+export const generateCFile = (taskList, internalResourceList,ResourceList) => {
 	return getCFileText(
 		getPriorityLevelsSorted(taskList),
 		getPriorityLevelsSize(taskList),
 		taskList,
-		internalResourceList
+		internalResourceList,
+		ResourceList
 	);
 };
