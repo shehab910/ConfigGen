@@ -48,7 +48,6 @@ const saveAs = (blob, fileName) => {
 };
 
 const App = () => {
-	// Assume jsonData is imported from an external file
 	const [jsonData, setJsonData] = useState(defaultJsonData);
 	const [taskList, setTaskList] = useState([getTasksDefaults()]);
 	const [taskListSchema, setTaskListSchema] = useState(
@@ -64,6 +63,19 @@ const App = () => {
 				(item) => item["Internal Resource Name"]
 			);
 			return newData;
+		});
+		setTaskList((prevTaskList) => {
+			const newTaskList = [...prevTaskList];
+			newTaskList.forEach((task) => {
+				if (
+					!internalResourceList
+						.map((ir) => ir["Internal Resource Name"])
+						.includes(task["Internal Resource"])
+				) {
+					task["Internal Resource"] = "";
+				}
+			});
+			return newTaskList;
 		});
 	}, [internalResourceList]);
 
@@ -124,7 +136,7 @@ const App = () => {
 			<hr />
 			<ResourceTable
 				ResourceList={ResourceList}
-				setResourceList={setResourceList}	
+				setResourceList={setResourceList}
 			/>
 			<hr />
 			<button className="button btn-green" onClick={generateFilesHandler}>
