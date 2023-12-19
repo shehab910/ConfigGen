@@ -142,6 +142,10 @@ export default App;
 /*TODO*/
 /*
 
-==> download Cfg files in specific folder
+==> a new coloumn in task table in which i can select multiple inputs of resource name
+
+==> cfg.c : Resource array and Resource dynamic for each resource name
+
+==> cfg.h : #define RESOURCE_COUNT 
  
 */
