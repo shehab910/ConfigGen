@@ -119,7 +119,7 @@ const getTaskListEPText = (taskList) => {
 
 const getAutoStartTasksText = (taskList) => {
 	return`
-uint8 AutoStartTasks [${getMaxNoTasksAutoStart(taskList)}] = {
+TaskType AutoStartTasks [${getMaxNoTasksAutoStart(taskList)}] = {
 ${getAutoStartTasksArrayValues(taskList)}
 }
 `.trim();
@@ -280,7 +280,8 @@ const getHFileText = (
 	ErrorHook,
 	ErrorCheckingType,
 	ConformanceClass,
-	taskList
+	taskList,
+	number_of_resources
 ) =>
 	`
 /***********************************************************************************/
@@ -312,6 +313,9 @@ const getHFileText = (
 #define CONFORMANCE_CLASS                               ${ConformanceClass} 
 
 #define MAX_NO_TASKS_AUTOSTART							${toUhexFormat(getMaxNoTasksAutoStart(taskList))}
+
+/* total number of Resources created by the user */
+#define RESOURCE_COUNT                                  ${toUhexFormat(number_of_resources)}
 `.trim();
 
 // Return a string containing the C macros defined in the JSON file.
@@ -352,7 +356,7 @@ ${getAutoStartTasksText(taskList)}
 
 `.trim();
 
-export const generateHFile = (taskList, jsonData) => {
+export const generateHFile = (taskList, jsonData,ResourceList) => {
 	return getHFileText(
 		taskList.length,
 		getPriorityLevelsSorted(taskList).length,
@@ -363,7 +367,8 @@ export const generateHFile = (taskList, jsonData) => {
 		getSTD_ON_OFF(jsonData.ErrorHook),
 		jsonData["Error Checking Type"],
 		getConformancesClass(taskList),
-		taskList
+		taskList,
+		ResourceList.length
 	);
 };
 

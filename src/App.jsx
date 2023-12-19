@@ -108,7 +108,7 @@ const App = () => {
 	};
 
 	const generateFilesHandler = () => {
-		const hCode = generateHFile(taskList, jsonData);
+		const hCode = generateHFile(taskList, jsonData,ResourceList);
 		// createAndDownloadFile("OS_Cfg.h", hCode);
 		const cCode = generateCFile(taskList, internalResourceList);
 		// createAndDownloadFile("OS_Cfg.c", cCode);
@@ -156,6 +156,7 @@ export default App;
 
 /*TODO*/
 /*
+==> the error appearing each time i refresh the page
 
 ==> a new coloumn in task table in which i can select multiple inputs of resource name
 
