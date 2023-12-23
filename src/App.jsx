@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 
-import MultiTypeInput from "./MultiTypeInput";
 import { generateCFile, generateHFile } from "./generator";
 import { getTasksDefaults } from "./utils";
 
-import staticJsonData from "./OS_static_props.json";
-import defaultJsonData from "./OS_default.json";
 import "./App.css";
 import TaskTable from "./tables/TaskTable";
 import InternalResourceTable from "./tables/InternalResourceTable";
 import ResourceTable from "./tables/ResourceTable";
 import dynamicJsonData from "./OS_dynamic_props.json";
 import JSZip from "jszip";
+import { staticPropsSchema } from "./schemas";
+import StaticInputs from "./StaticInputs";
 
 // const createAndDownloadFile = (fileName, fileContent) => {
 // 	const element = document.createElement("a");
@@ -48,7 +47,7 @@ const saveAs = (blob, fileName) => {
 };
 
 const App = () => {
-	const [jsonData, setJsonData] = useState(defaultJsonData);
+	const [jsonData, setJsonData] = useState(staticPropsSchema.getDefault());
 	const [taskList, setTaskList] = useState([getTasksDefaults()]);
 	const [taskListSchema, setTaskListSchema] = useState(
 		dynamicJsonData.TaskList
@@ -87,30 +86,10 @@ const App = () => {
 		}));
 	};
 
-	const renderStaticInputs = () => {
-		const staticJsonDataKeys = Object.keys(staticJsonData);
-		return (
-			<div className="static_component_container">
-				{staticJsonDataKeys.map((key, i) => (
-					<>
-						<MultiTypeInput
-							key={key}
-							keyName={key}
-							parent={staticJsonData}
-							data={jsonData}
-							onChangeHandler={handleStaticInputChange}
-						/>
-						{i !== staticJsonDataKeys.length - 1 && <hr />}
-					</>
-				))}
-			</div>
-		);
-	};
-
 	const generateFilesHandler = () => {
-		const hCode = generateHFile(taskList, jsonData,ResourceList);
+		const hCode = generateHFile(taskList, jsonData, ResourceList);
 		// createAndDownloadFile("OS_Cfg.h", hCode);
-		const cCode = generateCFile(taskList, internalResourceList,ResourceList);
+		const cCode = generateCFile(taskList, internalResourceList, ResourceList);
 		// createAndDownloadFile("OS_Cfg.c", cCode);
 		zipFilesAndDownload([
 			{ name: "OS_Cfg.h", content: hCode },
@@ -121,7 +100,10 @@ const App = () => {
 	return (
 		<div className="root">
 			<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
-			{renderStaticInputs()}
+			<StaticInputs
+				handleStaticInputChange={handleStaticInputChange}
+				jsonData={jsonData}
+			/>
 			<hr />
 			<ResourceTable
 				ResourceList={ResourceList}

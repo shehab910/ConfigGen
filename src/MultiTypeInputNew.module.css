@@ -1,0 +1,10 @@
+.error {
+	color: red;
+}
+.err-input {
+	border: 1px solid red;
+}
+.subtext {
+	font-size: 0.87rem;
+	margin: 0;
+}
