@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useMemo, useState } from "react";
+import MultiSelect from './multi-select/MultiSelect'
+// import './dropdown_dark.css'
 import MultiTypeInput from "./MultiTypeInput";
 import { generateCFile, generateHFile } from "./generator";
-import { getTasksDefaults } from "./utils";
+import { getAppModeDefault, getTasksDefaults } from "./utils";
 
 import staticJsonData from "./OS_static_props.json";
 import defaultJsonData from "./OS_default.json";
@@ -12,6 +13,8 @@ import InternalResourceTable from "./tables/InternalResourceTable";
 import ResourceTable from "./tables/ResourceTable";
 import dynamicJsonData from "./OS_dynamic_props.json";
 import JSZip from "jszip";
+import AppModeTable from "./tables/AppModeTable";
+import useUpdateTaskList from "./hooks/useUpdateItemList";
 
 // const createAndDownloadFile = (fileName, fileContent) => {
 // 	const element = document.createElement("a");
@@ -55,29 +58,10 @@ const App = () => {
 	);
 	const [internalResourceList, setInternalResourceList] = useState([]);
 	const [ResourceList, setResourceList] = useState([]);
+	const [appModeList, setAppModeList] = useState([getAppModeDefault()]);
 
-	useEffect(() => {
-		setTaskListSchema((prevData) => {
-			const newData = { ...prevData };
-			newData["Internal Resource"] = internalResourceList.map(
-				(item) => item["Internal Resource Name"]
-			);
-			return newData;
-		});
-		setTaskList((prevTaskList) => {
-			const newTaskList = [...prevTaskList];
-			newTaskList.forEach((task) => {
-				if (
-					!internalResourceList
-						.map((ir) => ir["Internal Resource Name"])
-						.includes(task["Internal Resource"])
-				) {
-					task["Internal Resource"] = "";
-				}
-			});
-			return newTaskList;
-		});
-	}, [internalResourceList]);
+	useUpdateTaskList(internalResourceList, setTaskList, setTaskListSchema, "Internal Resource", "Internal Resource Name");
+	useUpdateTaskList(appModeList, setTaskList, setTaskListSchema, "Application Mode", "Application Mode Name");
 
 	const handleStaticInputChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -108,18 +92,49 @@ const App = () => {
 	};
 
 	const generateFilesHandler = () => {
-		const hCode = generateHFile(taskList, jsonData,ResourceList);
+		const hCode = generateHFile(taskList, jsonData, ResourceList);
 		// createAndDownloadFile("OS_Cfg.h", hCode);
-		const cCode = generateCFile(taskList, internalResourceList,ResourceList);
+		const cCode = generateCFile(taskList, internalResourceList, ResourceList);
 		// createAndDownloadFile("OS_Cfg.c", cCode);
 		zipFilesAndDownload([
 			{ name: "OS_Cfg.h", content: hCode },
 			{ name: "OS_Cfg.c", content: cCode },
 		]);
 	};
+	const [value, setvalue] = useState('')
 
+	const handleOnchange = val => {
+		console.log(val);
+		setvalue(val)
+	}
+
+	const options = useMemo(() => [
+		{ label: 'Option 1', value: 'option_1' },
+		{ label: 'Option 2', value: 'option_2' },
+		{ label: 'Option 3', value: 'option_3' },
+		{ label: 'Option 4', value: 'option_4' },
+	],[]);
+	
+	const kharaHandler = (e) => {
+		setOptions(prev => prev.slice(0,2))
+		setvalue('')
+	}
+
+// 	const [value, setValue] = useState([])
+//   const [optionsState, setOptionsState] = useState(userOptions || [])
 	return (
 		<div className="root">
+			<MultiSelect
+				onChange={handleOnchange}
+				options={options}
+				disableChip
+				chipAlternateText="bahaa"
+				// value={value}
+				// setValue={setValue}
+				// optionsState={optionsState}
+				// setOptionsState={setOptionsState}
+			/>
+			<button onClick={kharaHandler}>khaar</button>
 			<h1 className="myheader">AUTOSAR-compilant OS for HSM Generator</h1>
 			{renderStaticInputs()}
 			<hr />
@@ -137,6 +152,11 @@ const App = () => {
 				setTaskList={setTaskList}
 				taskList={taskList}
 				taskListSchema={taskListSchema}
+			/>
+			<hr />
+			<AppModeTable
+				appModeList={appModeList}
+				setAppModeList={setAppModeList}
 			/>
 			<hr />
 			<button className="button btn-green" onClick={generateFilesHandler}>
@@ -161,5 +181,9 @@ export default App;
 ==> a new coloumn in task table in which i can select multiple inputs of resource name
 
 ==> cfg.c : Resource array and Resource dynamic for each resource name
+
+==> comments
+
+==> internal resource
  
 */

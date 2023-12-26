@@ -1,3 +1,6 @@
+import MultiSelect from 'react-multiple-select-dropdown-lite'
+import './dropdown_dark.css'
+
 /* eslint-disable react/prop-types */
 const MultiTypeInput = ({
 	keyName,
@@ -8,6 +11,16 @@ const MultiTypeInput = ({
 	disabled = false,
 }) => {
 	const getInput = () => {
+		if (parent[keyName].type === "multi-select") {
+			return (
+				<MultiSelect
+					onChange={onChangeHandler}
+					options={parent[keyName].options}
+					disableChip
+					chipAlternateText="bahaa"
+				/>
+			);
+		}
 		if (Array.isArray(parent[keyName])) {
 			return (
 				<select

@@ -7,14 +7,14 @@
 		"Resources": {
 			"type": "multi-select",
 			"options": [],
-			"value": []
+			"value": ""
 		},
 		"Priority": "0",
 		"Number Of Activation": "1",
 		"Internal Resource": [],
 		"Preemptive Mode": ["Full Preemptive", "Non Preemptive"],
 		"Task Type": ["Basic", "Extended"],
-		"Application Mode": ""
+		"Application Mode": []
 	},
 	"InternalResource": {
 		"Internal Resource-ID": 0,
@@ -23,6 +23,10 @@
 	"ResourceList": {
 		"Resource-ID": 0,
 		"Resource Name": "Resource 0"
+	},
+	"AppMode": {
+		"Application Mode-ID": 0,
+		"Application Mode Name": "OS Default App Mode"
 	},
 	"CounterList": [],
 	"AlarmList": []

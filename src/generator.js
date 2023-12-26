@@ -86,9 +86,10 @@ const getMaxNoTasksAutoStart = (taskList) => {
 
 const getPriorityLevelQueueText = (taskList) => {
 	const priorityLevelsSorted = getPriorityLevelsSorted(taskList);
+	const priorityLevelsSize = getPriorityLevelsSize(taskList);
 	let ret = "";
 	for (let i = 0; i < priorityLevelsSorted.length; i++) {
-		ret += "Os_Task* PriorityLevel" + priorityLevelsSorted[i] + "Queue[TASKS_PER_PRIORITY*MULTIPLE_ACTIVATIONS];\n"
+		ret += "Os_Task* PriorityLevel" + priorityLevelsSorted[i] + "Queue[" + priorityLevelsSize[i] + "];\n"
 	}
 	return ret;
 }
@@ -165,7 +166,7 @@ const getAutoStartTasksText = (taskList) => {
 	return`
 TaskType AutoStartTasks [${getMaxNoTasksAutoStart(taskList)}] = {
 ${getAutoStartTasksArrayValues(taskList)}
-}
+};
 `.trim();
 };
 
@@ -192,7 +193,7 @@ const getTaskSchedulingPolicy = (task) => {
 const getTaskFlagsText = (task) => {
 	return `
 {
-	.Type = ${task["Task Type"]},
+	.Type = ${task["Task Type"].toUpperCase()},
 	.TaskSchedulingPolicy = ${getTaskSchedulingPolicy(task)}
 }`.trim();
 };
@@ -220,8 +221,7 @@ const getTaskDynamicText = (task, taskList) => {
 	.EventsWaiting = 0,
 	.TaskCurrentPriority = ${getTaskCurrentPriority(task, taskList)},
 	.TaskState = SUSPENDED,
-	.PendingActivationRequests = 0,
-	.TaskIsPreempted = FALSE	
+	.PendingActivationRequests = 0	
 }`.trim();
 };
 
@@ -229,7 +229,7 @@ const getTaskListDynamicText = (taskList) => {
 	if (taskList.length === 0) return "";
 	return taskList
 		.map((task, i) =>
-			`TaskDynamicType Task${i + 1}Dynamic =\n${getTaskDynamicText(
+			`Os_TaskDynamic Task${i + 1}Dynamic =\n${getTaskDynamicText(
 				task,
 				taskList
 			)};`.trim()
@@ -272,7 +272,7 @@ const getIRText = (IR, IRIndex, taskList) => {
 	Os_InteranlResource ${IR["Internal Resource Name"].replace(" ", "")} =
 {
 	.CeilingPriority = ${getIRCelingPriority(IR, taskList)},
-	.InternalResourceDynamics = &InernalResourceDynamic${IRIndex + 1}
+	.InternalResourceDynamics = &${IR["Internal Resource Name"].replace(" ", "")}Dynamic
 };
 	`.trim();
 };
@@ -283,7 +283,7 @@ const getIRListText = (IRList, taskList) => {
 
 const getIRDynamicText = (IR) => {
 	return `
-	Os_InernalResourceDynamic ${IR["Internal Resource Name"].replace(" ", "")}Dynamic
+	Os_InernalResourceDynamic ${IR["Internal Resource Name"].replace(" ", "")}Dynamic =
 {
 	.TakenTaskPriority = 0,
 	.TakenFlag = FALSE
@@ -374,6 +374,8 @@ const getCFileText = (
 /***********************************************************************************/
 /*				    			External constants		         				   */
 /***********************************************************************************/
+#include <Os_kernel.h>
+
 TaskPriorityType PriorityLevels [PRIORITY_LEVELS] = ${listToCurlyBraces(priority_list)};
 
 TaskPriorityType PriorityLevelsSize [PRIORITY_LEVELS] = ${listToCurlyBraces(
@@ -405,12 +407,19 @@ ${getIRListText(internalResourceList, taskList)}
 
 ${getTaskListDynamicText(taskList)}
 
-OS_Task Tasks[TASK_COUNT] =
+Os_Task Tasks[TASK_COUNT] =
 {
 	${getTaskListInfoText(taskList)}
 };
 
 ${getAutoStartTasksText(taskList)}
+
+Os_Kernel Kernel =
+{
+	.TaskRunning = NULL_PTR,
+	.CpuLoad = NULL_PTR,
+	.OsState = OS_STATE_BOOT
+};
 
 `.trim();
 

@@ -97,10 +97,7 @@ body {
 	color: #fff; /* Light text color */
 	font-family: Arial, sans-serif;
 	margin: 0;
-	display: flex;
-	place-items: center;
-	max-width: 100%;
-	overflow: scroll;
+	overflow: auto;
 }
 .root {
 	margin: 1rem;

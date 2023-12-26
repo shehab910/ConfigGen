@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import Table from "./Table";
-import { getTasksDefaults } from "../utils";
+import { getAppModeDefault, getTasksDefaults } from "../utils";
 
 const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {
 	const onAddHandler = () => {
@@ -23,6 +23,10 @@ const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {
 		if (key === "Task-ID") {
 			disabled = true;
 		}
+		if(item["AutoStart"] === false && key === "Application Mode") {
+			disabled = true;
+			//TODO: PUT THE DEFAULT VALUE
+		}
 		return disabled;
 	};
 	return (
@@ -35,6 +39,7 @@ const TaskTable = ({ taskList, setTaskList, taskListSchema }) => {
 			itemListDefault={getTasksDefaults()}
 			onClearHandler={clearHandler}
 			checkIfDisabled={checkIfDisabled}
+			fullWidth
 		/>
 	);
 };

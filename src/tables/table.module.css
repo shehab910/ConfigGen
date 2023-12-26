@@ -26,3 +26,7 @@
 .dark-mode-table tbody tr:nth-child(odd) {
 	background-color: #222; /* Dark alternate row background color */
 }
+
+.full-width {
+	width: 100%;
+}

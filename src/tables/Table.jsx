@@ -14,6 +14,7 @@ const Table = ({
 	tableName,
 	onClearHandler,
 	checkIfDisabled,
+	fullWidth = false,
 }) => {
 	const handleDynamicInputChange = (e, i) => {
 		const { name, value, type, checked } = e.target;
@@ -48,7 +49,7 @@ const Table = ({
 
 	return (
 		<div className="table_container">
-			<table className={styles["dark-mode-table"]}>
+			<table className={`${styles["dark-mode-table"]} ${fullWidth && styles['full-width']}`}>
 				<thead>
 					<tr>
 						{Object.keys(itemListDefault).map((key) => (
